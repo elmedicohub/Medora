@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1730" />
+  <meta name="description" content="Medora — Your life. Your goals. Your people." />
+  <title>Medora</title>
+
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <main id="authView" class="auth-shell">
+    <section class="auth-brand">
+      <div class="brand-lockup">
+        <img src="assets/medora-mark.svg" class="brand-mark brand-mark-large" alt="" />
+        <div>
+          <div class="brand-name brand-name-large">Medora</div>
+          <div class="brand-tagline">Your life. Your goals. Your people.</div>
+        </div>
+      </div>
+
+      <div class="auth-copy">
+        <span class="eyebrow light">YOUR INTELLIGENT LIFE COMPANION</span>
+        <h1>Make room for what matters.</h1>
+        <p>
+          Organize your time, move your goals forward, and stay connected
+          to the people who help you grow.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <article><span>01</span><strong>Smart planning</strong><small>Bring work, learning and life into one view.</small></article>
+        <article><span>02</span><strong>Real goals</strong><small>Break ambitions into actions you can actually finish.</small></article>
+        <article><span>03</span><strong>Your people</strong><small>Build the circles that support your path.</small></article>
+      </div>
+    </section>
+
+    <section class="auth-panel">
+      <div class="auth-card">
+        <div class="mobile-brand">
+          <img src="assets/medora-mark.svg" class="brand-mark" alt="" />
+          <div>
+            <div class="brand-name">Medora</div>
+            <div class="brand-tagline">Your life. Your goals. Your people.</div>
+          </div>
+        </div>
+
+        <div class="auth-heading">
+          <span class="eyebrow">WELCOME TO MEDORA</span>
+          <h2 id="authTitle">Welcome back</h2>
+          <p id="authSubtitle">Sign in to continue your day.</p>
+        </div>
+
+        <div class="segmented" aria-label="Authentication">
+          <button id="showSignIn" class="segment active" type="button">Sign in</button>
+          <button id="showSignUp" class="segment" type="button">Create account</button>
+        </div>
+
+        <form id="signInForm" class="auth-form">
+          <label>
+            <span>Email</span>
+            <input id="signInEmail" type="email" autocomplete="email" required placeholder="you@example.com" />
+          </label>
+
+          <label>
+            <span>Password</span>
+            <input id="signInPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Your password" />
+          </label>
+
+          <button class="primary-button" type="submit">
+            <span>Sign in</span><span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <form id="signUpForm" class="auth-form hidden">
+          <label>
+            <span>Your name</span>
+            <input id="signUpName" type="text" autocomplete="name" required maxlength="80" placeholder="How people will know you" />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input id="signUpEmail" type="email" autocomplete="email" required placeholder="you@example.com" />
+          </label>
+
+          <label>
+            <span>Password</span>
+            <input id="signUpPassword" type="password" autocomplete="new-password" required minlength="8" placeholder="At least 8 characters" />
+          </label>
+
+          <button class="primary-button" type="submit">
+            <span>Create my Medora</span><span aria-hidden="true">→</span>
+          </button>
+        </form>
+
+        <div id="authMessage" class="form-message"></div>
+
+        <p class="auth-footnote">
+          Medora uses secure Supabase authentication. Your private data is protected by row-level security.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <main id="appView" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/medora-mark.svg" class="brand-mark" alt="" />
+        <div>
+          <div class="brand-name">Medora</div>
+          <div class="sidebar-tagline">Your life. Your goals. Your people.</div>
+        </div>
+      </div>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-screen="day">
+          <span class="nav-icon">⌂</span><span>My Day</span>
+        </button>
+        <button class="nav-item" data-screen="planner">
+          <span class="nav-icon">▦</span><span>Planner</span>
+        </button>
+        <button class="nav-item" data-screen="goals">
+          <span class="nav-icon">◎</span><span>Goals</span>
+        </button>
+        <button class="nav-item" data-screen="people">
+          <span class="nav-icon">◌</span><span>People</span>
+        </button>
+        <button class="nav-item" data-screen="progress">
+          <span class="nav-icon">↗</span><span>Progress</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-screen="profile">
+          <span class="nav-icon">○</span><span>Profile</span>
+        </button>
+        <button id="signOutButton" class="nav-item signout">
+          <span class="nav-icon">↪</span><span>Sign out</span>
+        </button>
+      </div>
+    </aside>
+
+    <section class="app-main">
+      <header class="topbar">
+        <div>
+          <span id="topbarKicker" class="eyebrow">MY DAY</span>
+          <h2 id="topbarTitle">Your day, clearly.</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="quickTaskButton" class="soft-button">+ Quick task</button>
+          <button id="avatarButton" class="avatar-button" title="Profile">
+            <span id="avatarInitials">M</span>
+          </button>
+        </div>
+      </header>
+
+      <div id="screenContainer" class="screen-container"></div>
+    </section>
+
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <button class="mobile-nav-item active" data-screen="day"><span>⌂</span><small>My Day</small></button>
+      <button class="mobile-nav-item" data-screen="planner"><span>▦</span><small>Planner</small></button>
+      <button class="mobile-nav-item" data-screen="goals"><span>◎</span><small>Goals</small></button>
+      <button class="mobile-nav-item" data-screen="people"><span>◌</span><small>People</small></button>
+      <button class="mobile-nav-item" data-screen="profile"><span>○</span><small>More</small></button>
+    </nav>
+  </main>
+
+  <div id="onboardingModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle">
+    <section class="modal-card onboarding-card">
+      <div class="onboarding-progress">
+        <span class="progress-dot active"></span>
+        <span class="progress-dot"></span>
+        <span class="progress-dot"></span>
+      </div>
+
+      <div id="onboardingStep1" class="onboarding-step">
+        <span class="eyebrow">STEP 1 OF 3</span>
+        <h2 id="onboardingTitle">Make Medora yours.</h2>
+        <p>Start with the basics. You can change these later.</p>
+
+        <label><span>Display name</span><input id="onboardName" type="text" maxlength="80" /></label>
+        <label><span>Username</span><input id="onboardUsername" type="text" maxlength="30" placeholder="e.g. mohamedalaa" /></label>
+        <div class="two-col">
+          <label><span>City</span><input id="onboardCity" type="text" maxlength="80" placeholder="Alexandria" /></label>
+          <label><span>Country</span><input id="onboardCountry" type="text" maxlength="80" placeholder="Egypt" /></label>
+        </div>
+        <button class="primary-button onboarding-next" data-next="2">Continue <span>→</span></button>
+      </div>
+
+      <div id="onboardingStep2" class="onboarding-step hidden">
+        <span class="eyebrow">STEP 2 OF 3</span>
+        <h2>Your professional path.</h2>
+        <p>Medora can adapt around your work and learning journey.</p>
+
+        <div class="two-col">
+          <label><span>Profession</span><input id="onboardProfession" type="text" placeholder="Doctor" /></label>
+          <label><span>Career stage</span><input id="onboardCareerStage" type="text" placeholder="Resident, Fellow, Specialist..." /></label>
+        </div>
+        <label><span>Specialty</span><input id="onboardSpecialty" type="text" placeholder="Cardiology" /></label>
+        <label><span>Institution</span><input id="onboardInstitution" type="text" placeholder="Where do you work or study?" /></label>
+
+        <div class="modal-actions">
+          <button class="text-button onboarding-back" data-back="1">Back</button>
+          <button class="primary-button onboarding-next" data-next="3">Continue <span>→</span></button>
+        </div>
+      </div>
+
+      <div id="onboardingStep3" class="onboarding-step hidden">
+        <span class="eyebrow">STEP 3 OF 3</span>
+        <h2>What matters right now?</h2>
+        <p>Add a few interests so Medora has a better starting point.</p>
+
+        <label>
+          <span>Interests</span>
+          <textarea id="onboardInterests" rows="4" placeholder="Interventional cardiology, research, German, fitness..."></textarea>
+          <small>Separate interests with commas.</small>
+        </label>
+
+        <div class="welcome-panel">
+          <img src="assets/medora-mark.svg" alt="" />
+          <div><strong>Your Medora starts here.</strong><span>Plan less. Progress more deliberately.</span></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="text-button onboarding-back" data-back="2">Back</button>
+          <button id="finishOnboarding" class="primary-button">Enter Medora <span>→</span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="quickTaskModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <section class="modal-card compact-modal">
+      <button class="modal-close" data-close-modal="quickTaskModal" aria-label="Close">×</button>
+      <span class="eyebrow">QUICK ADD</span>
+      <h2>Add something to your day.</h2>
+      <form id="quickTaskForm">
+        <label><span>Task</span><input id="quickTaskTitle" type="text" required maxlength="160" placeholder="What needs to happen?" /></label>
+        <div class="two-col">
+          <label><span>Due</span><input id="quickTaskDue" type="datetime-local" /></label>
+          <label><span>Priority</span>
+            <select id="quickTaskPriority">
+              <option value="1">Low</option>
+              <option value="2" selected>Normal</option>
+              <option value="3">High</option>
+              <option value="4">Critical</option>
+            </select>
+          </label>
+        </div>
+        <button class="primary-button" type="submit">Add task <span>→</span></button>
+      </form>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
