@@ -1,0 +1,19 @@
+
+/*
+ * Specialty-neutral Interests support.
+ * The JS removes matching cards; this file prevents transition/flicker
+ * and keeps the remaining grid clean after cards disappear.
+ */
+
+html[data-specialty-neutral-interests="true"] .interests-grid,
+html[data-specialty-neutral-interests="true"] .interest-grid,
+html[data-specialty-neutral-interests="true"] [data-interests-grid] {
+  grid-auto-flow: row;
+}
+
+html[data-specialty-neutral-interests="true"] .interest-card,
+html[data-specialty-neutral-interests="true"] .interests-card,
+html[data-specialty-neutral-interests="true"] .interest-item,
+html[data-specialty-neutral-interests="true"] .interest-tile {
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
