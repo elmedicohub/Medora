@@ -60,9 +60,17 @@
 
     if (!document.querySelector('script[data-planner-custom-range]')) {
       const script = document.createElement("script");
-      script.src = "planner-custom-range.js?v=1.0.0";
+      script.src = "planner-custom-range.js?v=1.1.0";
       script.defer = true;
       script.dataset.plannerCustomRange = "true";
+      document.head.appendChild(script);
+    }
+
+    if (!document.querySelector('script[data-planner-sharing-enhancement]')) {
+      const script = document.createElement("script");
+      script.src = "planner-sharing-enhancement.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.plannerSharingEnhancement = "true";
       document.head.appendChild(script);
     }
   }
