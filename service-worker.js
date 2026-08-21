@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-life-mind-safe-v18-smart-dates-start-esc";
+const CACHE = "medora-life-mind-safe-v19-checkin-colors";
 
 self.addEventListener("install", () => self.skipWaiting());
 
