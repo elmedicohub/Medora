@@ -4,30 +4,6 @@
   const DESKTOP_ICON = "◉";
   const MOBILE_ICON = "◉";
 
-  function loadLifeMind() {
-    if (!document.querySelector('link[data-life-mind-style]')) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "life-mind.css?v=1.0.0";
-      link.dataset.lifeMindStyle = "true";
-      document.head.appendChild(link);
-    }
-    if (!document.querySelector('script[data-life-mind-script]')) {
-      const script = document.createElement("script");
-      script.src = "planner-brain.js?v=1.0.1";
-      script.defer = true;
-      script.dataset.lifeMindScript = "true";
-      document.head.appendChild(script);
-    }
-    if (!document.querySelector('script[data-life-mind-duration-patch]')) {
-      const script = document.createElement("script");
-      script.src = "planner-duration-patch.js?v=1.1.0";
-      script.defer = true;
-      script.dataset.lifeMindDurationPatch = "true";
-      document.head.appendChild(script);
-    }
-  }
-
   function addWallButtons() {
     const mainNav = document.querySelector(".main-nav");
     if (mainNav && !mainNav.querySelector("[data-wall-link]")) {
@@ -52,13 +28,19 @@
   }
 
   function clearWallActive() {
-    document.querySelectorAll("[data-wall-link]").forEach((button) => button.classList.remove("active"));
+    document.querySelectorAll("[data-wall-link]").forEach((button) => {
+      button.classList.remove("active");
+    });
   }
 
   function setWallActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen]")
+    document
+      .querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen]")
       .forEach((button) => button.classList.remove("active"));
-    document.querySelectorAll("[data-wall-link]").forEach((button) => button.classList.add("active"));
+
+    document
+      .querySelectorAll("[data-wall-link]")
+      .forEach((button) => button.classList.add("active"));
   }
 
   function styleEmbeddedWall(frame) {
@@ -70,9 +52,14 @@
       style.textContent = `
         .wall-topbar,.wall-left{display:none!important}
         body{background:transparent!important}
-        .wall-layout{width:100%!important;max-width:none!important;margin:0!important;grid-template-columns:minmax(0,1fr) 270px!important;gap:18px!important}
+        .wall-layout{
+          width:100%!important;
+          max-width:none!important;
+          margin:0!important;
+          grid-template-columns:minmax(0,1fr) 270px!important;
+          gap:18px!important
+        }
         .wall-right{position:static!important;top:auto!important}
-        .card,.profile-card,.side-note{box-shadow:0 8px 26px rgba(36,47,76,.045)!important}
         @media(max-width:1050px){
           .wall-layout{grid-template-columns:1fr!important}
           .wall-right{display:none!important}
@@ -82,22 +69,6 @@
         }
       `;
       doc.head.appendChild(style);
-
-      const replacements = [
-        ["Motivea community", "Medora community"],
-        ["visible Motivea network", "visible Medora network"],
-        ["Motivea profile", "Medora profile"],
-        ["Motivea user", "Medora user"],
-        ["Motivea member", "Medora member"]
-      ];
-
-      const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
-      let node;
-      while ((node = walker.nextNode())) {
-        let value = node.nodeValue;
-        replacements.forEach(([from, to]) => { value = value.replaceAll(from, to); });
-        node.nodeValue = value;
-      }
     } catch (error) {
       console.warn("Wall embed styling skipped:", error);
     }
@@ -110,6 +81,7 @@
     const kicker = document.getElementById("topbarKicker");
     const title = document.getElementById("topbarTitle");
     const container = document.getElementById("screenContainer");
+
     if (kicker) kicker.textContent = "WALL";
     if (title) title.textContent = "Share progress. Grow together.";
     if (!container) return;
@@ -132,19 +104,22 @@
 
   function bind() {
     addWallButtons();
-    loadLifeMind();
 
-    document.addEventListener("click", (event) => {
-      const wallButton = event.target.closest("[data-wall-link]");
-      if (wallButton) {
-        openWall(event);
-        return;
-      }
+    document.addEventListener(
+      "click",
+      (event) => {
+        const wallButton = event.target.closest("[data-wall-link]");
+        if (wallButton) {
+          openWall(event);
+          return;
+        }
 
-      if (event.target.closest("[data-screen]") || event.target.closest("#avatarButton")) {
-        clearWallActive();
-      }
-    }, true);
+        if (event.target.closest("[data-screen]") || event.target.closest("#avatarButton")) {
+          clearWallActive();
+        }
+      },
+      true
+    );
   }
 
   if (document.readyState === "loading") {
