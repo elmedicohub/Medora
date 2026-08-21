@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-nav-noflash-v27";
+const CACHE = "medora-notes-voice-v28";
 
 self.addEventListener("install", () => self.skipWaiting());
 
