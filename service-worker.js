@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-life-mind-safe-v17-multi-sharing";
+const CACHE = "medora-life-mind-safe-v18-smart-dates-start-esc";
 
 self.addEventListener("install", () => self.skipWaiting());
 
