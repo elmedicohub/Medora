@@ -97,6 +97,14 @@
       script.dataset.planGoalProgress = "true";
       document.head.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-activity-tracker]')) {
+      const script = document.createElement("script");
+      script.src = "activity-tracker.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.activityTracker = "true";
+      document.head.appendChild(script);
+    }
   }
 
   function addWallButtons() {
