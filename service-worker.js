@@ -1,4 +1,4 @@
-const CACHE = "medora-shell-v5-flex-plans";
+const CACHE = "medora-shell-v6-planner-persistence";
 const CORE = [
   "./",
   "./index.html",
