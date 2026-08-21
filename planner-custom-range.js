@@ -51,6 +51,8 @@
     const duration = form.querySelector("#lmPlanDuration");
     const oldWrap = form.querySelector("#lmCustomDurationWrap");
     if (!duration || !oldWrap) return;
+    const customOption = duration.querySelector('option[value="custom"]');
+    if (customOption) customOption.textContent = "Custom dates";
     oldWrap.dataset.rangePatched = "1";
 
     const start = new Date();
