@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-brain-command-center-v29";
+const CACHE = "medora-brain-progress-v30";
 
 self.addEventListener("install", () => self.skipWaiting());
 
