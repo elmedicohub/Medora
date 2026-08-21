@@ -1,0 +1,20 @@
+MOTIVEA WALL NAVIGATION PATCH
+
+Add this link to your existing navigation:
+
+<a href="wall.html" class="nav-item">
+  <span aria-hidden="true">◉</span>
+  <span>Wall</span>
+</a>
+
+If your navigation uses buttons instead of anchors, use:
+
+<button type="button" class="nav-item" onclick="location.href='wall.html'">
+  <span aria-hidden="true">◉</span>
+  <span>Wall</span>
+</button>
+
+Recommended placement:
+My Day · Planner · Goals · People · Wall · More
+
+No other existing page needs to be deleted or replaced.

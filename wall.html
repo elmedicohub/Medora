@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Motivea · Wall</title>
+  <link rel="stylesheet" href="wall.css?v=1.0.0">
+</head>
+<body>
+  <div class="wall-shell">
+    <header class="wall-topbar">
+      <a class="brand" href="index.html" aria-label="Back to Motivea">
+        <span class="brand-mark">M</span>
+        <span>
+          <strong>Motivea</strong>
+          <small>Your life. Your goals. Your people.</small>
+        </span>
+      </a>
+      <div class="top-actions">
+        <a class="ghost-btn" href="index.html">← My Day</a>
+        <button id="refreshWall" class="icon-btn" type="button" title="Refresh Wall">↻</button>
+        <button id="signOutButton" class="ghost-btn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <main class="wall-layout">
+      <aside class="wall-left">
+        <section class="profile-card">
+          <div id="myAvatar" class="avatar avatar-xl">M</div>
+          <div>
+            <h2 id="myName">Loading…</h2>
+            <p id="myHeadline">Your Motivea profile</p>
+          </div>
+          <a href="index.html#profile" class="text-link">View profile</a>
+        </section>
+
+        <nav class="wall-nav" aria-label="Wall filters">
+          <button class="wall-filter active" data-filter="all" type="button">
+            <span>🌐</span><span>For you</span>
+          </button>
+          <button class="wall-filter" data-filter="connections" type="button">
+            <span>🤝</span><span>Connections</span>
+          </button>
+          <button class="wall-filter" data-filter="mine" type="button">
+            <span>👤</span><span>My posts</span>
+          </button>
+        </nav>
+
+        <section class="side-note">
+          <strong>Wall, not noise.</strong>
+          <p>Share progress, ask for support, celebrate milestones and find people moving in the same direction.</p>
+        </section>
+      </aside>
+
+      <section class="wall-center">
+        <section class="composer card">
+          <div class="composer-head">
+            <div id="composerAvatar" class="avatar">M</div>
+            <button id="openComposer" class="composer-prompt" type="button">
+              Share an update, milestone or question…
+            </button>
+          </div>
+
+          <form id="composerForm" class="composer-form" hidden>
+            <textarea id="postContent" maxlength="3000" rows="4" placeholder="What is happening in your life, goal or progress?" required></textarea>
+
+            <div class="composer-row">
+              <label>
+                <span>Post type</span>
+                <select id="postType">
+                  <option value="update">Update</option>
+                  <option value="goal">Goal progress</option>
+                  <option value="achievement">Achievement</option>
+                  <option value="question">Question / ask for help</option>
+                </select>
+              </label>
+
+              <label>
+                <span>Who can see it?</span>
+                <select id="postVisibility">
+                  <option value="public">Motivea community</option>
+                  <option value="connections">Connections</option>
+                  <option value="circle">One circle</option>
+                  <option value="private">Only me</option>
+                </select>
+              </label>
+            </div>
+
+            <div id="circlePickerWrap" class="composer-row" hidden>
+              <label class="full">
+                <span>Circle</span>
+                <select id="circlePicker"></select>
+              </label>
+            </div>
+
+            <div id="goalPickerWrap" class="composer-row" hidden>
+              <label class="full">
+                <span>Link a goal</span>
+                <select id="goalPicker"></select>
+              </label>
+            </div>
+
+            <div id="achievementPickerWrap" class="composer-row" hidden>
+              <label class="full">
+                <span>Link an achievement</span>
+                <select id="achievementPicker"></select>
+              </label>
+            </div>
+
+            <div class="composer-actions">
+              <span id="composerStatus" class="status"></span>
+              <button id="cancelComposer" class="ghost-btn" type="button">Cancel</button>
+              <button id="publishPost" class="primary-btn" type="submit">Post to Wall</button>
+            </div>
+          </form>
+        </section>
+
+        <div class="feed-heading">
+          <div>
+            <h1 id="feedTitle">For you</h1>
+            <p id="feedSubtitle">Updates from your visible Motivea network.</p>
+          </div>
+          <span id="postCount" class="count-pill">0 posts</span>
+        </div>
+
+        <section id="feed" class="feed" aria-live="polite">
+          <div class="feed-loading">Loading your Wall…</div>
+        </section>
+      </section>
+
+      <aside class="wall-right">
+        <section class="card compact">
+          <div class="section-title">
+            <span>🎯</span>
+            <div>
+              <strong>What belongs here?</strong>
+              <small>Purposeful social progress</small>
+            </div>
+          </div>
+          <ul class="clean-list">
+            <li>Progress on a goal</li>
+            <li>A milestone worth celebrating</li>
+            <li>A useful discovery or reflection</li>
+            <li>A question where people can help</li>
+          </ul>
+        </section>
+
+        <section class="card compact">
+          <div class="section-title">
+            <span>🔒</span>
+            <div>
+              <strong>You control visibility</strong>
+              <small>Community · Connections · Circle · Private</small>
+            </div>
+          </div>
+          <p class="muted">Your private planner and schedule are never posted automatically.</p>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="commentsDialog">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <div>
+          <strong>Conversation</strong>
+          <small id="commentsPostLabel"></small>
+        </div>
+        <button id="closeComments" class="icon-btn" type="button">×</button>
+      </div>
+      <div id="commentsList" class="comments-list"></div>
+      <form id="commentForm" class="comment-form">
+        <input id="commentInput" maxlength="1200" placeholder="Write a supportive comment…" required>
+        <button class="primary-btn" type="submit">Send</button>
+      </form>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3/dist/umd/supabase.min.js"></script>
+  <script src="wall-config.js?v=1.0.0"></script>
+  <script src="wall.js?v=1.0.0"></script>
+</body>
+</html>
