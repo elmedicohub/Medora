@@ -1,33 +1,151 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Community | Medora</title>
-<link rel="stylesheet" href="assets/css/community-wall.css?v=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>Community | Medora</title>
+  <link rel="stylesheet" href="assets/css/community-wall.css?v=2">
 </head>
 <body>
 <div class="medora-shell">
 <aside class="medora-sidebar">
-<a class="brand" href="index.html"><div class="brand-mark">M</div><div><strong>Medora</strong><span>Your life. Your goals. Your people.</span></div></a>
-<nav class="sidebar-nav">
-<a href="index.html"><span>⌂</span>My Day</a><a href="planner.html"><span>▦</span>Planner</a><a href="goals.html"><span>◎</span>Goals</a><a href="interests.html"><span>✦</span>Interests</a><a href="people.html"><span>◌</span>People</a><a class="active" href="community.html"><span>◈</span>Community</a><a href="progress.html"><span>↗</span>Progress</a>
-</nav>
-<div class="sidebar-bottom"><a href="profile.html"><span>◉</span>Profile</a><button id="signOutBtn" type="button"><span>↪</span>Sign out</button></div>
+  <a class="brand" href="index.html" aria-label="Medora home">
+    <div class="brand-mark">M</div>
+    <div>
+      <strong>Medora</strong>
+      <span>Your life. Your goals. Your people.</span>
+    </div>
+  </a>
+
+  <nav class="sidebar-nav">
+    <a href="index.html"><span>⌂</span>My Day</a>
+    <a href="planner.html"><span>▦</span>Planner</a>
+    <a href="goals.html"><span>◎</span>Goals</a>
+    <a href="interests.html"><span>✦</span>Interests</a>
+    <a href="people.html"><span>◌</span>People</a>
+    <a href="community.html"><span>◈</span>Community</a>
+    <a href="progress.html"><span>↗</span>Progress</a>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <a href="profile.html"><span>◉</span>Profile</a>
+    <button id="signOutBtn" type="button"><span>↪</span>Sign out</button>
+  </div>
 </aside>
-<main class="community-page">
-<header class="community-topbar"><div><span class="eyebrow">COMMUNITY</span><h1>Your people, moving forward.</h1><p>Share what you are learning, building and working toward.</p></div><div class="top-actions"><button class="ghost-btn" id="findPeopleBtn">Find people</button><button class="avatar">MA</button></div></header>
-<section class="community-layout"><div class="feed-column">
-<div class="feed-tabs"><button class="active" data-feed="for-you">For you</button><button data-feed="following">Following</button><button data-feed="friends">Friends</button><button data-feed="interests">Interests</button></div>
-<section class="composer-card"><button class="composer-main" id="openComposerBtn"><span class="mini-avatar">MA</span><span>Share something with your community...</span></button><div class="composer-actions"><button data-composer-kind="photo">▧ Photo</button><button data-composer-kind="achievement">✦ Achievement</button><button data-composer-kind="goal">◎ Goal update</button><button data-composer-kind="question">? Question</button><button data-composer-kind="poll">◫ Poll</button></div></section>
-<section id="feedList" class="feed-list"></section>
-<div id="emptyFeed" class="empty-feed" hidden><div>◈</div><h3>Your community feed is ready</h3><p>Follow people, interests and goals to make this space yours.</p><button class="primary-btn" id="emptyCreateBtn">Create the first post</button></div>
+
+  <main class="community-page">
+    <header class="community-topbar">
+      <div>
+        <span class="eyebrow">COMMUNITY</span>
+        <h1>Your people, moving forward.</h1>
+        <p>Share what you are learning, building and working toward.</p>
+      </div>
+      <div class="top-actions">
+        <button class="ghost-btn" id="findPeopleBtn" type="button">Find people</button>
+        <button class="avatar" type="button" aria-label="Profile">MA</button>
+      </div>
+    </header>
+
+    <section class="community-layout">
+      <div class="feed-column">
+        <div class="feed-tabs">
+          <button class="active" data-feed="for-you">For you</button>
+          <button data-feed="following">Following</button>
+          <button data-feed="friends">Friends</button>
+          <button data-feed="interests">Interests</button>
+        </div>
+
+        <section class="composer-card">
+          <button class="composer-main" id="openComposerBtn" type="button">
+            <span class="mini-avatar">MA</span>
+            <span>Share something with your community...</span>
+          </button>
+          <div class="composer-actions">
+            <button type="button" data-composer-kind="photo">▧ Photo</button>
+            <button type="button" data-composer-kind="achievement">✦ Achievement</button>
+            <button type="button" data-composer-kind="goal">◎ Goal update</button>
+            <button type="button" data-composer-kind="question">? Question</button>
+            <button type="button" data-composer-kind="poll">◫ Poll</button>
+          </div>
+        </section>
+
+        <section id="feedList" class="feed-list"></section>
+        <div id="emptyFeed" class="empty-feed" hidden>
+          <div>◈</div><h3>Your community feed is ready</h3>
+          <p>Follow people and interests to make this space yours.</p>
+          <button class="primary-btn" id="emptyCreateBtn" type="button">Create the first post</button>
+        </div>
+      </div>
+
+      <aside class="community-rail">
+        <section class="rail-card">
+          <div class="rail-heading"><div><span class="eyebrow">CONNECT</span><h2>People to know</h2></div><a href="people.html">See all</a></div>
+          <div class="people-list">
+            <article><span class="person-avatar">AS</span><div><strong>Ahmed Samir</strong><small>Research · Fitness</small></div><button>Connect</button></article>
+            <article><span class="person-avatar">SM</span><div><strong>Sara Mostafa</strong><small>Learning · Travel</small></div><button>Connect</button></article>
+            <article><span class="person-avatar">YO</span><div><strong>Youssef Omar</strong><small>Technology · Projects</small></div><button>Connect</button></article>
+          </div>
+        </section>
+
+        <section class="rail-card">
+          <div class="rail-heading"><div><span class="eyebrow">DISCOVER</span><h2>Trending interests</h2></div><a href="interests.html">Explore</a></div>
+          <div class="interest-list">
+            <a href="interests.html">AI & Technology <span>128</span></a>
+            <a href="interests.html">Research <span>93</span></a>
+            <a href="interests.html">Fitness <span>81</span></a>
+            <a href="interests.html">Travel <span>66</span></a>
+            <a href="interests.html">Languages <span>52</span></a>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
 </div>
-<aside class="community-rail">
-<section class="rail-card"><div class="rail-heading"><div><span class="eyebrow">CONNECT</span><h2>People to know</h2></div><a href="people.html">See all</a></div><div class="people-list"><article><span class="person-avatar">AS</span><div><strong>Ahmed Samir</strong><small>Research · Fitness</small></div><button>Connect</button></article><article><span class="person-avatar">SM</span><div><strong>Sara Mostafa</strong><small>Learning · Travel</small></div><button>Connect</button></article><article><span class="person-avatar">YO</span><div><strong>Youssef Omar</strong><small>Technology · Projects</small></div><button>Connect</button></article></div></section>
-<section class="rail-card"><div class="rail-heading"><div><span class="eyebrow">DISCOVER</span><h2>Trending interests</h2></div><a href="interests.html">Explore</a></div><div class="interest-list"><a href="interests.html">AI & Technology <span>128</span></a><a href="interests.html">Research <span>93</span></a><a href="interests.html">Fitness <span>81</span></a><a href="interests.html">Travel <span>66</span></a><a href="interests.html">Languages <span>52</span></a></div></section>
-<section class="rail-card"><div class="rail-heading"><div><span class="eyebrow">PROGRESS</span><h2>Friends this week</h2></div><a href="progress.html">View</a></div><div class="progress-friends"><div><span>1</span><strong>Ahmed</strong><small>+340 pts</small></div><div><span>2</span><strong>Sara</strong><small>+285 pts</small></div><div><span>3</span><strong>Omar</strong><small>+210 pts</small></div></div></section>
-</aside></section>
-</main></div>
-<div class="modal-backdrop" id="composerBackdrop" hidden><section class="composer-modal"><div class="modal-header"><div><span class="eyebrow">CREATE POST</span><h2>Share with your people</h2></div><button class="icon-btn" id="closeComposerBtn">×</button></div><form id="postForm"><div class="composer-user-row"><span class="person-avatar">MA</span><div><strong>Mohamed Alaa</strong><select id="postPrivacy"><option value="everyone">Everyone</option><option value="connections">Connections</option><option value="close-friends">Close friends</option><option value="only-me">Only me</option></select></div></div><textarea id="postText" rows="6" maxlength="2000" placeholder="What are you working on, learning or celebrating?"></textarea><div class="post-type-grid"><button type="button" data-type="standard" class="selected">Post</button><button type="button" data-type="achievement">Achievement</button><button type="button" data-type="goal">Goal update</button><button type="button" data-type="question">Question</button><button type="button" data-type="poll">Poll</button></div><div id="goalFields" class="conditional-fields" hidden><input id="goalName" placeholder="Goal name"><input id="goalProgress" type="number" min="0" max="100" placeholder="Progress %"></div><div id="pollFields" class="conditional-fields" hidden><input class="poll-option" placeholder="Option 1"><input class="poll-option" placeholder="Option 2"><button id="addPollOptionBtn" type="button">+ Add option</button></div><div class="composer-footer"><label class="comment-toggle"><input id="commentsEnabled" type="checkbox" checked><span>Allow comments</span></label><button class="primary-btn" type="submit">Post</button></div></form></section></div>
-<script src="assets/js/community-wall.js?v=1"></script><script src="assets/js/community-sidebar-patch.js?v=1"></script>
-</body></html>
+
+<div class="modal-backdrop" id="composerBackdrop" hidden>
+  <section class="composer-modal" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <div><span class="eyebrow">CREATE POST</span><h2>Share with your people</h2></div>
+      <button class="icon-btn" id="closeComposerBtn" type="button">×</button>
+    </div>
+    <form id="postForm">
+      <div class="composer-user-row">
+        <span class="person-avatar">MA</span>
+        <div><strong>Mohamed Alaa</strong>
+          <select id="postPrivacy">
+            <option value="everyone">Everyone</option>
+            <option value="connections">Connections</option>
+            <option value="close-friends">Close friends</option>
+            <option value="only-me">Only me</option>
+          </select>
+        </div>
+      </div>
+      <textarea id="postText" rows="6" maxlength="2000" placeholder="What are you working on, learning or celebrating?"></textarea>
+      <div class="post-type-grid">
+        <button type="button" data-type="standard" class="selected">Post</button>
+        <button type="button" data-type="achievement">Achievement</button>
+        <button type="button" data-type="goal">Goal update</button>
+        <button type="button" data-type="question">Question</button>
+        <button type="button" data-type="poll">Poll</button>
+      </div>
+      <div id="goalFields" class="conditional-fields" hidden>
+        <input id="goalName" placeholder="Goal name">
+        <input id="goalProgress" type="number" min="0" max="100" placeholder="Progress %">
+      </div>
+      <div id="pollFields" class="conditional-fields" hidden>
+        <input class="poll-option" placeholder="Option 1">
+        <input class="poll-option" placeholder="Option 2">
+        <button id="addPollOptionBtn" type="button">+ Add option</button>
+      </div>
+      <div class="composer-footer">
+        <label class="comment-toggle"><input id="commentsEnabled" type="checkbox" checked><span>Allow comments</span></label>
+        <button class="primary-btn" type="submit">Post</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script src="assets/js/community-wall.js?v=2"></script>
+</body>
+</html>

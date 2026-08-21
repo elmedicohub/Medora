@@ -1,31 +1,40 @@
-MEDORA COMMUNITY WALL
+MEDORA COMMUNITY — DIRECT SIDEBAR INTEGRATION
 
-ADD:
-- community.html
-- assets/css/community-wall.css
-- assets/js/community-wall.js
-- assets/js/community-sidebar-patch.js
+This corrected package does NOT rely on JavaScript to make Community appear.
 
-To add Community to every current sidebar, include before </body>:
-<script src="assets/js/community-sidebar-patch.js?v=1"></script>
+1. Add these files:
+   - community.html
+   - assets/css/community-wall.css
+   - assets/js/community-wall.js
 
-OPTIONAL on My Day:
-<link rel="stylesheet" href="assets/css/myday-community-preview.css?v=1">
-<script src="assets/js/myday-community-preview.js?v=1"></script>
+2. In EVERY existing Medora page, replace your current sidebar with:
+   - components/medora-sidebar.html
 
-Included features:
+   OR simply add this exact line between People and Progress:
+
+   <a href="community.html"><span>◈</span>Community</a>
+
+3. On community.html the Community item is already present directly in the HTML.
+
+4. No `community-sidebar-patch.js` is required anymore.
+
+The wall contains:
 - For You / Following / Friends / Interests
-- Text posts
-- Achievements
-- Goal updates
-- Questions
-- Polls
-- Like / Comment / Share / Save
-- Post privacy: Everyone / Connections / Close friends / Only me
-- Comments on/off
-- People to connect with
+- Create post
+- Achievement
+- Goal update
+- Question
+- Poll
+- Like
+- Comment
+- Share
+- Save
+- Privacy per post
+- Comment enable/disable
+- Suggested people
 - Trending interests
-- Friends' weekly progress
 
-Current storage is localStorage (medora_community_posts_v1), so this works immediately without a database migration.
-For real multi-user production, replace storage in community-wall.js with Supabase tables/realtime.
+Data is stored locally for now under:
+medora_community_posts_v2
+
+This is intentional so the page works immediately without requiring a Supabase migration.
