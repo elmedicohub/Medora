@@ -10,6 +10,7 @@
     '[data-screen="planner"]',
     '[data-study-link]',
     '[data-activity-link]',
+    '[data-notes-link]',
     '[data-screen="progress"]',
     '[data-screen="interests"]',
     '[data-screen="people"]'
@@ -67,7 +68,8 @@
       ["data-activity-tracker", "activity-tracker.js?v=1.0.0"],
       ["data-study-hub", "study-hub.js?v=1.0.0"],
       ["data-study-hub-pro", "study-hub-pro.js?v=1.0.0"],
-      ["data-study-hub-insights-plus", "study-hub-insights-plus.js?v=1.0.0"]
+      ["data-study-hub-insights-plus", "study-hub-insights-plus.js?v=1.0.0"],
+      ["data-note-hub", "note-hub.js?v=1.0.0"]
     ];
 
     scripts.forEach(([attr, src]) => {
@@ -162,7 +164,7 @@
   }
 
   function setWallActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link]")
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link]")
       .forEach(b => b.classList.remove("active"));
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.add("active"));
   }
@@ -213,7 +215,7 @@
     document.addEventListener("click", event => {
       const wall = event.target.closest("[data-wall-link]");
       if (wall) { openWall(event); return; }
-      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("#avatarButton")) clearWallActive();
+      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) clearWallActive();
     }, true);
   }
 
