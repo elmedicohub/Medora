@@ -4,6 +4,19 @@
   const DESKTOP_ICON = "◉";
   const MOBILE_ICON = "◉";
 
+  function loadDateFormatPatch(doc = document) {
+    try {
+      if (doc.querySelector('script[data-medora-date-format]')) return;
+      const script = doc.createElement("script");
+      script.src = "date-format-patch.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.medoraDateFormat = "true";
+      doc.head.appendChild(script);
+    } catch (error) {
+      console.warn("Date format patch skipped", error);
+    }
+  }
+
   function loadLifeMindSafely() {
     if (!document.querySelector('link[data-life-mind-style]')) {
       const link = document.createElement("link");
@@ -68,6 +81,7 @@
         @media(max-width:1050px){.wall-layout{grid-template-columns:1fr!important}.wall-right{display:none!important}}
       `;
       doc.head.appendChild(style);
+      loadDateFormatPatch(doc);
     } catch (e) {
       console.warn("Wall styling skipped", e);
     }
@@ -95,6 +109,7 @@
 
   function bind() {
     addWallButtons();
+    loadDateFormatPatch();
     loadLifeMindSafely();
 
     document.addEventListener("click", event => {
