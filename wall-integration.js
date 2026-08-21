@@ -18,6 +18,20 @@
   let navReordering = false;
   let navTimer = null;
 
+  function installNavBootStyle() {
+    if (document.getElementById("medoraNavBootStyle")) return;
+    const style = document.createElement("style");
+    style.id = "medoraNavBootStyle";
+    style.textContent = `
+      .main-nav,.mobile-nav{visibility:hidden!important}
+      html.medora-nav-ready .main-nav,
+      html.medora-nav-ready .mobile-nav{visibility:visible!important}
+    `;
+    document.head.appendChild(style);
+  }
+
+  installNavBootStyle();
+
   function loadDateFormatPatch(doc = document) {
     try {
       if (doc.querySelector('script[data-medora-date-format]')) return;
@@ -103,9 +117,21 @@
     navReordering = false;
   }
 
+  function mainNavComplete() {
+    const mainNav = document.querySelector(".main-nav");
+    return !!mainNav && NAV_ORDER.every(selector => !!mainNav.querySelector(selector));
+  }
+
+  function revealNavigation(force = false) {
+    if (force || mainNavComplete()) {
+      document.documentElement.classList.add("medora-nav-ready");
+    }
+  }
+
   function reorderNavigation() {
     applyNavOrder(document.querySelector(".main-nav"));
     applyNavOrder(document.querySelector(".mobile-nav"));
+    revealNavigation(false);
   }
 
   function scheduleNavOrder(delay = 20) {
@@ -122,8 +148,13 @@
     if (mainNav) observer.observe(mainNav, { childList: true });
     if (mobileNav) observer.observe(mobileNav, { childList: true });
 
-    // Activity and Study are loaded dynamically, so enforce again after their insertion windows.
-    [0, 100, 250, 500, 1000, 2000, 4000].forEach(ms => setTimeout(reorderNavigation, ms));
+    [0, 50, 100, 180, 300, 500, 800, 1200].forEach(ms => setTimeout(reorderNavigation, ms));
+
+    // Safety fallback: never leave navigation hidden if one optional module fails.
+    setTimeout(() => {
+      reorderNavigation();
+      revealNavigation(true);
+    }, 1800);
   }
 
   function clearWallActive() {
