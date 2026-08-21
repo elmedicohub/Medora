@@ -1,31 +1,31 @@
-MEDORA GOALS REDESIGN — REPLACEMENT PACKAGE
+MEDORA COMMUNITY WALL
 
-Replace / add these files:
-1. goals.html
-2. assets/css/goals-redesign.css
-3. assets/js/goals-redesign.js
+ADD:
+- community.html
+- assets/css/community-wall.css
+- assets/js/community-wall.js
+- assets/js/community-sidebar-patch.js
 
-What changed:
-- One compact Goals header (no duplicate hero/title).
-- + New Goal opens a modal instead of occupying permanent page space.
-- Summary: Active / On track / Due soon / Overall progress.
-- Active, This week, Completed, Paused/Archived views.
-- Structured life-domain categories only.
-- Milestones per goal.
-- "Break this goal down" helper.
-- Weekly commitment.
-- Goal progress based on completed milestones.
-- Next milestone shown on every goal card.
-- Weekly actions automatically collected from active goals.
-- Search + category filtering.
-- Responsive desktop/mobile design.
+To add Community to every current sidebar, include before </body>:
+<script src="assets/js/community-sidebar-patch.js?v=1"></script>
 
-Storage:
-This version uses localStorage key `medora_goals_v2` so it can be dropped in
-without requiring a database migration. When your Supabase goal table is ready,
-the storage functions in goals-redesign.js can be swapped to Supabase without
-changing the UI.
+OPTIONAL on My Day:
+<link rel="stylesheet" href="assets/css/myday-community-preview.css?v=1">
+<script src="assets/js/myday-community-preview.js?v=1"></script>
 
-Important:
-If your existing filenames differ, you can rename goals.html or copy its
-<main> section into your existing Goals page.
+Included features:
+- For You / Following / Friends / Interests
+- Text posts
+- Achievements
+- Goal updates
+- Questions
+- Polls
+- Like / Comment / Share / Save
+- Post privacy: Everyone / Connections / Close friends / Only me
+- Comments on/off
+- People to connect with
+- Trending interests
+- Friends' weekly progress
+
+Current storage is localStorage (medora_community_posts_v1), so this works immediately without a database migration.
+For real multi-user production, replace storage in community-wall.js with Supabase tables/realtime.
