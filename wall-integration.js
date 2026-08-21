@@ -89,6 +89,14 @@
       script.dataset.plannerCheckinIndications = "true";
       document.head.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-plan-goal-progress]')) {
+      const script = document.createElement("script");
+      script.src = "plan-goal-progress-enhancement.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.planGoalProgress = "true";
+      document.head.appendChild(script);
+    }
   }
 
   function addWallButtons() {
