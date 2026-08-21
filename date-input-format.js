@@ -10,6 +10,12 @@
     const date = `${m[3]}/${m[2]}/${m[1]}`;
     return m[4] ? `${date} ${m[4]}:${m[5]}` : date;
   };
+  const maskDMY = value => {
+    const digits = String(value || "").replace(/\D/g, "").slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0,2)}/${digits.slice(2)}`;
+    return `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`;
+  };
   const parseDMY = (text, withTime = false) => {
     const re = withTime
       ? /^\s*(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2}))?\s*$/
@@ -52,6 +58,7 @@
     visible.className = "medora-date-text";
     visible.placeholder = withTime ? "DD/MM/YYYY HH:MM" : "DD/MM/YYYY";
     visible.autocomplete = "off";
+    visible.inputMode = "numeric";
     visible.value = toDMY(input.value);
     visible.setAttribute("aria-label", withTime ? "Date and time DD/MM/YYYY HH:MM" : "Date DD/MM/YYYY");
     const button = document.createElement("button");
@@ -85,7 +92,13 @@
 
     visible.addEventListener("blur", syncToNative);
     visible.addEventListener("change", syncToNative);
-    visible.addEventListener("input", () => visible.classList.remove("invalid"));
+    visible.addEventListener("input", () => {
+      visible.classList.remove("invalid");
+      if (!withTime) {
+        const masked = maskDMY(visible.value);
+        if (visible.value !== masked) visible.value = masked;
+      }
+    });
     input.addEventListener("change", () => { visible.value = toDMY(input.value); });
     button.addEventListener("click", () => {
       try { input.showPicker?.(); } catch {}
