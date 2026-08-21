@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>Goals | Medora</title>
+  <link rel="stylesheet" href="assets/css/goals-redesign.css?v=1">
+</head>
+<body>
+<div class="medora-shell">
+  <aside class="medora-sidebar">
+    <a class="brand" href="index.html" aria-label="Medora home">
+      <div class="brand-mark">M</div>
+      <div>
+        <strong>Medora</strong>
+        <span>Your life. Your goals. Your people.</span>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <a href="index.html"><span>⌂</span>My Day</a>
+      <a href="planner.html"><span>▦</span>Planner</a>
+      <a class="active" href="goals.html"><span>◎</span>Goals</a>
+      <a href="interests.html"><span>✦</span>Interests</a>
+      <a href="people.html"><span>◌</span>People</a>
+      <a href="progress.html"><span>↗</span>Progress</a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <a href="profile.html"><span>◉</span>Profile</a>
+      <button id="signOutBtn" type="button"><span>↪</span>Sign out</button>
+    </div>
+  </aside>
+
+  <main class="goals-page">
+    <header class="goals-topbar">
+      <div>
+        <span class="eyebrow">GOALS</span>
+        <h1>Turn ambition into progress.</h1>
+        <p>Set direction, break it into milestones, and keep the next step visible.</p>
+      </div>
+      <div class="top-actions">
+        <button class="ghost-btn" id="quickTaskBtn" type="button">+ Quick task</button>
+        <button class="primary-btn" id="newGoalBtn" type="button">+ New goal</button>
+        <button class="avatar" type="button" aria-label="Profile">MA</button>
+      </div>
+    </header>
+
+    <section class="summary-strip">
+      <article>
+        <span>Active goals</span>
+        <strong id="activeCount">0</strong>
+      </article>
+      <article>
+        <span>On track</span>
+        <strong id="onTrackCount">0</strong>
+      </article>
+      <article>
+        <span>Due soon</span>
+        <strong id="dueSoonCount">0</strong>
+      </article>
+      <article class="overall-progress">
+        <div>
+          <span>Overall goal progress</span>
+          <strong id="overallProgress">0%</strong>
+        </div>
+        <div class="summary-track"><span id="overallProgressBar"></span></div>
+      </article>
+    </section>
+
+    <section class="goals-toolbar">
+      <div class="segmented" role="tablist" aria-label="Goal views">
+        <button class="active" type="button" data-view="active">Active</button>
+        <button type="button" data-view="week">This week</button>
+        <button type="button" data-view="completed">Completed</button>
+        <button type="button" data-view="archived">Paused / archived</button>
+      </div>
+      <div class="toolbar-right">
+        <select id="categoryFilter" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          <option value="Career">Career</option>
+          <option value="Learning">Learning</option>
+          <option value="Health">Health</option>
+          <option value="Finance">Finance</option>
+          <option value="Relationships">Relationships</option>
+          <option value="Personal">Personal</option>
+          <option value="Travel">Travel</option>
+          <option value="Project">Project</option>
+          <option value="Other">Other</option>
+        </select>
+        <input id="goalSearch" type="search" placeholder="Search goals">
+      </div>
+    </section>
+
+    <section class="active-goals-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">BIG PICTURE</span>
+          <h2 id="sectionTitle">Active goals</h2>
+        </div>
+        <p id="sectionSubtitle">Keep the important outcomes visible without turning them into noise.</p>
+      </div>
+
+      <div id="goalsGrid" class="goals-grid"></div>
+
+      <div id="emptyGoals" class="empty-goals" hidden>
+        <div class="empty-icon">◎</div>
+        <h3>No goals here yet</h3>
+        <p>Create one goal that would make the next few months meaningfully better.</p>
+        <button class="primary-btn" type="button" data-open-goal>+ Create your first goal</button>
+      </div>
+    </section>
+
+    <section class="week-section">
+      <div class="section-heading compact-heading">
+        <div>
+          <span class="eyebrow">EXECUTION</span>
+          <h2>This week's goal actions</h2>
+        </div>
+        <a href="planner.html">Open Planner →</a>
+      </div>
+      <div id="weekActions" class="week-actions"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="goalModalBackdrop" hidden>
+  <section class="goal-modal" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+    <div class="modal-header">
+      <div>
+        <span class="eyebrow">NEW GOAL</span>
+        <h2 id="goalModalTitle">What are you moving toward?</h2>
+      </div>
+      <button class="icon-btn" id="closeGoalModal" type="button" aria-label="Close">×</button>
+    </div>
+
+    <form id="goalForm">
+      <input id="goalId" type="hidden">
+
+      <label>
+        <span>Goal</span>
+        <input id="goalTitle" required maxlength="120" placeholder="e.g. Reach German B2">
+      </label>
+
+      <div class="form-grid two">
+        <label>
+          <span>Category</span>
+          <select id="goalCategory" required>
+            <option value="">Choose category</option>
+            <option>Career</option>
+            <option>Learning</option>
+            <option>Health</option>
+            <option>Finance</option>
+            <option>Relationships</option>
+            <option>Personal</option>
+            <option>Travel</option>
+            <option>Project</option>
+            <option>Other</option>
+          </select>
+        </label>
+        <label>
+          <span>Target date</span>
+          <input id="goalDate" type="date" required>
+        </label>
+      </div>
+
+      <label>
+        <span>Why this matters</span>
+        <textarea id="goalWhy" rows="3" maxlength="500" placeholder="A short reason that will still matter when motivation dips."></textarea>
+      </label>
+
+      <div class="milestone-builder">
+        <div class="builder-heading">
+          <div>
+            <span>Milestones</span>
+            <small>Turn the outcome into a sequence you can actually execute.</small>
+          </div>
+          <button class="ai-btn" id="breakDownBtn" type="button">✦ Break this goal down</button>
+        </div>
+
+        <div id="milestoneRows" class="milestone-rows"></div>
+        <button class="add-milestone" id="addMilestoneBtn" type="button">+ Add milestone</button>
+      </div>
+
+      <label>
+        <span>Weekly commitment</span>
+        <select id="weeklyCommitment">
+          <option value="1">1 focused action / week</option>
+          <option value="2">2 focused actions / week</option>
+          <option value="3" selected>3 focused actions / week</option>
+          <option value="5">5 focused actions / week</option>
+          <option value="7">Daily progress</option>
+        </select>
+      </label>
+
+      <div class="modal-actions">
+        <button class="ghost-btn" id="cancelGoalBtn" type="button">Cancel</button>
+        <button class="primary-btn" type="submit">Save goal</button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<script src="assets/js/goals-redesign.js?v=1"></script>
+</body>
+</html>
