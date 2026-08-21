@@ -21,7 +21,7 @@
     }
     if (!document.querySelector('script[data-life-mind-duration-patch]')) {
       const script = document.createElement("script");
-      script.src = "planner-duration-patch.js?v=1.0.0";
+      script.src = "planner-duration-patch.js?v=1.1.0";
       script.defer = true;
       script.dataset.lifeMindDurationPatch = "true";
       document.head.appendChild(script);
