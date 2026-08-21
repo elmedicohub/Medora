@@ -74,6 +74,26 @@
     }
   }
 
+  function reorderNavigation() {
+    const mainNav = document.querySelector(".main-nav");
+    if (mainNav) {
+      const goals = mainNav.querySelector('[data-screen="goals"]');
+      const planner = mainNav.querySelector('[data-screen="planner"]');
+      if (goals && planner && goals.nextElementSibling !== planner) {
+        mainNav.insertBefore(goals, planner);
+      }
+    }
+
+    const mobileNav = document.querySelector(".mobile-nav");
+    if (mobileNav) {
+      const goals = mobileNav.querySelector('[data-screen="goals"]');
+      const planner = mobileNav.querySelector('[data-screen="planner"]');
+      if (goals && planner && goals.nextElementSibling !== planner) {
+        mobileNav.insertBefore(goals, planner);
+      }
+    }
+  }
+
   function clearWallActive() {
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.remove("active"));
   }
@@ -125,6 +145,7 @@
 
   function bind() {
     addWallButtons();
+    reorderNavigation();
     loadDateFormatPatch();
     loadLifeMindSafely();
 
