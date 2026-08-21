@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-life-mind-safe-v20-target-progress";
+const CACHE = "medora-activity-v21";
 
 self.addEventListener("install", () => self.skipWaiting());
 
