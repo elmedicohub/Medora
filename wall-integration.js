@@ -49,6 +49,22 @@
       script.dataset.goalPlanBridge = "true";
       document.head.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-medora-date-input-format]')) {
+      const script = document.createElement("script");
+      script.src = "date-input-format.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.medoraDateInputFormat = "true";
+      document.head.appendChild(script);
+    }
+
+    if (!document.querySelector('script[data-planner-custom-range]')) {
+      const script = document.createElement("script");
+      script.src = "planner-custom-range.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.plannerCustomRange = "true";
+      document.head.appendChild(script);
+    }
   }
 
   function addWallButtons() {
@@ -79,18 +95,13 @@
     if (mainNav) {
       const goals = mainNav.querySelector('[data-screen="goals"]');
       const planner = mainNav.querySelector('[data-screen="planner"]');
-      if (goals && planner && goals.nextElementSibling !== planner) {
-        mainNav.insertBefore(goals, planner);
-      }
+      if (goals && planner && goals.nextElementSibling !== planner) mainNav.insertBefore(goals, planner);
     }
-
     const mobileNav = document.querySelector(".mobile-nav");
     if (mobileNav) {
       const goals = mobileNav.querySelector('[data-screen="goals"]');
       const planner = mobileNav.querySelector('[data-screen="planner"]');
-      if (goals && planner && goals.nextElementSibling !== planner) {
-        mobileNav.insertBefore(goals, planner);
-      }
+      if (goals && planner && goals.nextElementSibling !== planner) mobileNav.insertBefore(goals, planner);
     }
   }
 
@@ -126,19 +137,16 @@
   function openWall(event) {
     event?.preventDefault();
     setWallActive();
-
     const kicker = document.getElementById("topbarKicker");
     const title = document.getElementById("topbarTitle");
     const container = document.getElementById("screenContainer");
     if (kicker) kicker.textContent = "WALL";
     if (title) title.textContent = "Share progress. Grow together.";
     if (!container) return;
-
     container.innerHTML = `<section class="screen" aria-label="Medora Wall">
       <iframe id="medoraWallFrame" title="Medora Wall" src="wall.html?embedded=1"
         style="width:100%;height:calc(100vh - 128px);min-height:650px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
     </section>`;
-
     const frame = document.getElementById("medoraWallFrame");
     frame?.addEventListener("load", () => styleEmbeddedWall(frame), { once:true });
   }
@@ -148,22 +156,12 @@
     reorderNavigation();
     loadDateFormatPatch();
     loadLifeMindSafely();
-
     document.addEventListener("click", event => {
       const wall = event.target.closest("[data-wall-link]");
-      if (wall) {
-        openWall(event);
-        return;
-      }
-      if (event.target.closest("[data-screen]") || event.target.closest("#avatarButton")) {
-        clearWallActive();
-      }
+      if (wall) { openWall(event); return; }
+      if (event.target.closest("[data-screen]") || event.target.closest("#avatarButton")) clearWallActive();
     }, true);
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", bind, { once:true });
-  } else {
-    bind();
-  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once:true }); else bind();
 })();
