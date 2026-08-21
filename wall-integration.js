@@ -52,7 +52,7 @@
 
     if (!document.querySelector('script[data-medora-date-input-format]')) {
       const script = document.createElement("script");
-      script.src = "date-input-format.js?v=1.0.0";
+      script.src = "date-input-format.js?v=1.1.0";
       script.defer = true;
       script.dataset.medoraDateInputFormat = "true";
       document.head.appendChild(script);
@@ -60,7 +60,7 @@
 
     if (!document.querySelector('script[data-planner-custom-range]')) {
       const script = document.createElement("script");
-      script.src = "planner-custom-range.js?v=1.1.0";
+      script.src = "planner-custom-range.js?v=1.2.0";
       script.defer = true;
       script.dataset.plannerCustomRange = "true";
       document.head.appendChild(script);
@@ -71,6 +71,14 @@
       script.src = "planner-sharing-enhancement.js?v=1.0.0";
       script.defer = true;
       script.dataset.plannerSharingEnhancement = "true";
+      document.head.appendChild(script);
+    }
+
+    if (!document.querySelector('script[data-planner-start-esc]')) {
+      const script = document.createElement("script");
+      script.src = "planner-start-and-esc.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.plannerStartEsc = "true";
       document.head.appendChild(script);
     }
   }
