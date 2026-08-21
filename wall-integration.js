@@ -26,85 +26,28 @@
       document.head.appendChild(link);
     }
 
-    if (!document.querySelector('script[data-life-mind-script]')) {
-      const script = document.createElement("script");
-      script.src = "planner-brain.js?v=2.0.0";
-      script.defer = true;
-      script.dataset.lifeMindScript = "true";
-      document.head.appendChild(script);
-    }
+    const scripts = [
+      ["data-life-mind-script", "planner-brain.js?v=2.0.0"],
+      ["data-life-mind-card-enhancement", "planner-card-enhancement.js?v=1.0.0"],
+      ["data-goal-plan-bridge", "goal-plan-bridge.js?v=1.0.0"],
+      ["data-medora-date-input-format", "date-input-format.js?v=1.1.0"],
+      ["data-planner-custom-range", "planner-custom-range.js?v=1.2.0"],
+      ["data-planner-sharing-enhancement", "planner-sharing-enhancement.js?v=1.0.0"],
+      ["data-planner-start-esc", "planner-start-and-esc.js?v=1.0.0"],
+      ["data-planner-checkin-indications", "planner-checkin-indications.js?v=1.0.0"],
+      ["data-plan-goal-progress", "plan-goal-progress-enhancement.js?v=1.0.0"],
+      ["data-activity-tracker", "activity-tracker.js?v=1.0.0"],
+      ["data-study-hub", "study-hub.js?v=1.0.0"]
+    ];
 
-    if (!document.querySelector('script[data-life-mind-card-enhancement]')) {
+    scripts.forEach(([attr, src]) => {
+      if (document.querySelector(`script[${attr}]`)) return;
       const script = document.createElement("script");
-      script.src = "planner-card-enhancement.js?v=1.0.0";
+      script.src = src;
       script.defer = true;
-      script.dataset.lifeMindCardEnhancement = "true";
+      script.setAttribute(attr, "true");
       document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-goal-plan-bridge]')) {
-      const script = document.createElement("script");
-      script.src = "goal-plan-bridge.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.goalPlanBridge = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-medora-date-input-format]')) {
-      const script = document.createElement("script");
-      script.src = "date-input-format.js?v=1.1.0";
-      script.defer = true;
-      script.dataset.medoraDateInputFormat = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-planner-custom-range]')) {
-      const script = document.createElement("script");
-      script.src = "planner-custom-range.js?v=1.2.0";
-      script.defer = true;
-      script.dataset.plannerCustomRange = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-planner-sharing-enhancement]')) {
-      const script = document.createElement("script");
-      script.src = "planner-sharing-enhancement.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.plannerSharingEnhancement = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-planner-start-esc]')) {
-      const script = document.createElement("script");
-      script.src = "planner-start-and-esc.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.plannerStartEsc = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-planner-checkin-indications]')) {
-      const script = document.createElement("script");
-      script.src = "planner-checkin-indications.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.plannerCheckinIndications = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-plan-goal-progress]')) {
-      const script = document.createElement("script");
-      script.src = "plan-goal-progress-enhancement.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.planGoalProgress = "true";
-      document.head.appendChild(script);
-    }
-
-    if (!document.querySelector('script[data-activity-tracker]')) {
-      const script = document.createElement("script");
-      script.src = "activity-tracker.js?v=1.0.0";
-      script.defer = true;
-      script.dataset.activityTracker = "true";
-      document.head.appendChild(script);
-    }
+    });
   }
 
   function addWallButtons() {
