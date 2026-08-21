@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-nav-order-v25";
+const CACHE = "medora-nav-order-v26";
 
 self.addEventListener("install", () => self.skipWaiting());
 
