@@ -1,4 +1,5 @@
 (() => {
   "use strict";
-  // Recovery build: flexible Planner duration patch is temporarily disabled.
+  // Duration controls are built natively into planner-brain.js v2.
+  // This file intentionally does nothing, so older references remain harmless.
 })();
