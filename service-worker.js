@@ -1,10 +1,15 @@
-const CACHE = "medora-shell-v2-interests";
+const CACHE = "medora-shell-v3-wall";
 const CORE = [
   "./",
   "./index.html",
   "./styles.css",
   "./config.js",
   "./app.js",
+  "./wall-integration.js",
+  "./wall.html",
+  "./wall.css",
+  "./wall-config.js",
+  "./wall.js",
   "./manifest.webmanifest",
   "./assets/medora-mark.svg",
   "./assets/icon-192.png",
