@@ -3,6 +3,20 @@
 
   const DESKTOP_ICON = "◉";
   const MOBILE_ICON = "◉";
+  const NAV_ORDER = [
+    '[data-screen="day"]',
+    '[data-wall-link]',
+    '[data-screen="goals"]',
+    '[data-screen="planner"]',
+    '[data-study-link]',
+    '[data-activity-link]',
+    '[data-screen="progress"]',
+    '[data-screen="interests"]',
+    '[data-screen="people"]'
+  ];
+
+  let navReordering = false;
+  let navTimer = null;
 
   function loadDateFormatPatch(doc = document) {
     try {
@@ -55,13 +69,12 @@
   function addWallButtons() {
     const mainNav = document.querySelector(".main-nav");
     if (mainNav && !mainNav.querySelector("[data-wall-link]")) {
-      const progress = mainNav.querySelector('[data-screen="progress"]');
       const button = document.createElement("button");
       button.type = "button";
       button.className = "nav-item";
       button.dataset.wallLink = "true";
       button.innerHTML = `<span class="nav-icon">${DESKTOP_ICON}</span><span>Wall</span>`;
-      mainNav.insertBefore(button, progress || null);
+      mainNav.appendChild(button);
     }
 
     const mobileNav = document.querySelector(".mobile-nav");
@@ -75,19 +88,42 @@
     }
   }
 
+  function applyNavOrder(container) {
+    if (!container || navReordering) return;
+    const wanted = NAV_ORDER.map(selector => container.querySelector(selector)).filter(Boolean);
+    if (!wanted.length) return;
+
+    const wantedSet = new Set(wanted);
+    const current = [...container.children].filter(node => wantedSet.has(node));
+    const isCorrect = current.length === wanted.length && current.every((node, index) => node === wanted[index]);
+    if (isCorrect) return;
+
+    navReordering = true;
+    wanted.forEach(node => container.appendChild(node));
+    navReordering = false;
+  }
+
   function reorderNavigation() {
+    applyNavOrder(document.querySelector(".main-nav"));
+    applyNavOrder(document.querySelector(".mobile-nav"));
+  }
+
+  function scheduleNavOrder(delay = 20) {
+    clearTimeout(navTimer);
+    navTimer = setTimeout(reorderNavigation, delay);
+  }
+
+  function watchNavigation() {
+    const observer = new MutationObserver(() => {
+      if (!navReordering) scheduleNavOrder();
+    });
     const mainNav = document.querySelector(".main-nav");
-    if (mainNav) {
-      const goals = mainNav.querySelector('[data-screen="goals"]');
-      const planner = mainNav.querySelector('[data-screen="planner"]');
-      if (goals && planner && goals.nextElementSibling !== planner) mainNav.insertBefore(goals, planner);
-    }
     const mobileNav = document.querySelector(".mobile-nav");
-    if (mobileNav) {
-      const goals = mobileNav.querySelector('[data-screen="goals"]');
-      const planner = mobileNav.querySelector('[data-screen="planner"]');
-      if (goals && planner && goals.nextElementSibling !== planner) mobileNav.insertBefore(goals, planner);
-    }
+    if (mainNav) observer.observe(mainNav, { childList: true });
+    if (mobileNav) observer.observe(mobileNav, { childList: true });
+
+    // Activity and Study are loaded dynamically, so enforce again after their insertion windows.
+    [0, 100, 250, 500, 1000, 2000, 4000].forEach(ms => setTimeout(reorderNavigation, ms));
   }
 
   function clearWallActive() {
@@ -95,7 +131,7 @@
   }
 
   function setWallActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen]")
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link]")
       .forEach(b => b.classList.remove("active"));
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.add("active"));
   }
@@ -139,14 +175,17 @@
   function bind() {
     addWallButtons();
     reorderNavigation();
+    watchNavigation();
     loadDateFormatPatch();
     loadLifeMindSafely();
+
     document.addEventListener("click", event => {
       const wall = event.target.closest("[data-wall-link]");
       if (wall) { openWall(event); return; }
-      if (event.target.closest("[data-screen]") || event.target.closest("#avatarButton")) clearWallActive();
+      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("#avatarButton")) clearWallActive();
     }, true);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once:true }); else bind();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once:true });
+  else bind();
 })();
