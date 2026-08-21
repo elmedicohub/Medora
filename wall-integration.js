@@ -41,6 +41,14 @@
       script.dataset.lifeMindCardEnhancement = "true";
       document.head.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-goal-plan-bridge]')) {
+      const script = document.createElement("script");
+      script.src = "goal-plan-bridge.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.goalPlanBridge = "true";
+      document.head.appendChild(script);
+    }
   }
 
   function addWallButtons() {
