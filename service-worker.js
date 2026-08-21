@@ -1,4 +1,4 @@
-const CACHE = "medora-shell-v3-wall";
+const CACHE = "medora-shell-v4-life-mind";
 const CORE = [
   "./",
   "./index.html",
@@ -6,6 +6,8 @@ const CORE = [
   "./config.js",
   "./app.js",
   "./wall-integration.js",
+  "./life-mind.css",
+  "./planner-brain.js",
   "./wall.html",
   "./wall.css",
   "./wall-config.js",

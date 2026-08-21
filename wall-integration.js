@@ -4,6 +4,23 @@
   const DESKTOP_ICON = "◉";
   const MOBILE_ICON = "◉";
 
+  function loadLifeMind() {
+    if (!document.querySelector('link[data-life-mind-style]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "life-mind.css?v=1.0.0";
+      link.dataset.lifeMindStyle = "true";
+      document.head.appendChild(link);
+    }
+    if (!document.querySelector('script[data-life-mind-script]')) {
+      const script = document.createElement("script");
+      script.src = "planner-brain.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.lifeMindScript = "true";
+      document.head.appendChild(script);
+    }
+  }
+
   function addWallButtons() {
     const mainNav = document.querySelector(".main-nav");
     if (mainNav && !mainNav.querySelector("[data-wall-link]")) {
@@ -108,6 +125,7 @@
 
   function bind() {
     addWallButtons();
+    loadLifeMind();
 
     document.addEventListener("click", (event) => {
       const wallButton = event.target.closest("[data-wall-link]");

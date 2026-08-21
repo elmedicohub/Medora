@@ -1,0 +1,3 @@
+-- Medora Life Mind planner backend reference.
+-- The live schema is applied in Supabase migrations add_life_mind_planner and harden_life_mind_plan_access.
+-- Tables: life_plans, plan_routines, plan_participants, plan_checkins.
