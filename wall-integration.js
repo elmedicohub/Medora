@@ -81,6 +81,14 @@
       script.dataset.plannerStartEsc = "true";
       document.head.appendChild(script);
     }
+
+    if (!document.querySelector('script[data-planner-checkin-indications]')) {
+      const script = document.createElement("script");
+      script.src = "planner-checkin-indications.js?v=1.0.0";
+      script.defer = true;
+      script.dataset.plannerCheckinIndications = "true";
+      document.head.appendChild(script);
+    }
   }
 
   function addWallButtons() {
