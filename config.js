@@ -6,17 +6,21 @@ window.MEDORA_CONFIG = {
   SUPABASE_PUBLISHABLE_KEY: "sb_publishable__ZwYly94tS9hVEXs9pjSxA_6mDYRWhl"
 };
 
-// Keep the final Medora navigation order stable even when additive modules
-// (Wall, Activity and Study) are injected after the core app boots.
+// Small post-boot helpers. The core app remains independent so an optional
+// enhancement can never prevent authentication or the main Medora UI loading.
 (() => {
-  const loadNavOrder = () => {
-    if (document.querySelector('script[data-medora-nav-order]')) return;
+  const load = (attr, src) => {
+    if (document.querySelector(`script[${attr}]`)) return;
     const script = document.createElement('script');
-    script.src = 'nav-order.js?v=1.0.0';
+    script.src = src;
     script.defer = true;
-    script.dataset.medoraNavOrder = 'true';
+    script.setAttribute(attr, 'true');
     document.head.appendChild(script);
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', loadNavOrder, { once: true });
-  else loadNavOrder();
+  const bootEnhancements = () => {
+    load('data-medora-nav-order', 'nav-order.js?v=1.1.0');
+    load('data-medora-brain', 'medora-brain.js?v=1.0.0');
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
+  else bootEnhancements();
 })();
