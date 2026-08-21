@@ -12,6 +12,12 @@
   const pad = n => String(n).padStart(2, "0");
   const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   const dmy = d => `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+  const maskDMY = value => {
+    const digits = String(value || "").replace(/\D/g, "").slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0,2)}/${digits.slice(2)}`;
+    return `${digits.slice(0,2)}/${digits.slice(2,4)}/${digits.slice(4)}`;
+  };
   const parseDMY = s => {
     const m = String(s || "").match(/^\s*(\d{1,2})\/(\d{1,2})\/(\d{4})\s*$/);
     if (!m) return null;
@@ -60,11 +66,15 @@
     const range = document.createElement("div");
     range.className = "lm-custom-range";
     range.innerHTML = `
-      <label>From<input id="lmCustomFrom" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" value="${dmy(start)}"></label>
-      <label>To<input id="lmCustomTo" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" value="${dmy(end)}"></label>
+      <label>From<input id="lmCustomFrom" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" value="${dmy(start)}"></label>
+      <label>To<input id="lmCustomTo" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" value="${dmy(end)}"></label>
       <small>Custom plans use exact start and end dates.</small>
     `;
     oldWrap.insertAdjacentElement("afterend", range);
+    range.querySelectorAll("input").forEach(input => input.addEventListener("input", () => {
+      const masked = maskDMY(input.value);
+      if (input.value !== masked) input.value = masked;
+    }));
     updateVisibility(form);
     duration.addEventListener("change", () => updateVisibility(form));
 
