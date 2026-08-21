@@ -10,23 +10,13 @@
     '[data-screen="planner"]',
     '[data-study-link]',
     '[data-activity-link]',
+    '[data-notes-link]',
     '[data-screen="progress"]',
     '[data-screen="interests"]',
     '[data-screen="people"]'
   ];
 
-  const mobileOrder = [
-    '[data-screen="day"]',
-    '[data-wall-link]',
-    '[data-screen="goals"]',
-    '[data-screen="planner"]',
-    '[data-study-link]',
-    '[data-activity-link]',
-    '[data-screen="progress"]',
-    '[data-screen="interests"]',
-    '[data-screen="people"]'
-  ];
-
+  const mobileOrder = [...desktopOrder];
   let applying = false;
   let timer = null;
 
@@ -34,12 +24,10 @@
     if (!container) return;
     const nodes = selectors.map(s => container.querySelector(s)).filter(Boolean);
     if (!nodes.length) return;
-
     const children = [...container.children];
     const currentKnown = children.filter(c => nodes.includes(c));
     const alreadyCorrect = currentKnown.length === nodes.length && currentKnown.every((n, i) => n === nodes[i]);
     if (alreadyCorrect) return;
-
     applying = true;
     nodes.forEach(node => container.appendChild(node));
     applying = false;
@@ -53,21 +41,17 @@
 
   function schedule() {
     clearTimeout(timer);
-    timer = setTimeout(reorder, 30);
+    timer = setTimeout(reorder, 20);
   }
 
   function init() {
     reorder();
-    const observer = new MutationObserver(() => {
-      if (!applying) schedule();
-    });
+    const observer = new MutationObserver(() => { if (!applying) schedule(); });
     const main = document.querySelector('.main-nav');
     const mobile = document.querySelector('.mobile-nav');
     if (main) observer.observe(main, { childList: true });
     if (mobile) observer.observe(mobile, { childList: true });
-
-    // Activity / Study / Wall are additive modules and may appear after app boot.
-    [150, 400, 900, 1800].forEach(ms => setTimeout(reorder, ms));
+    [80, 180, 350, 700, 1200, 1800].forEach(ms => setTimeout(reorder, ms));
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
