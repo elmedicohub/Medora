@@ -38,7 +38,8 @@
       ["data-plan-goal-progress", "plan-goal-progress-enhancement.js?v=1.0.0"],
       ["data-activity-tracker", "activity-tracker.js?v=1.0.0"],
       ["data-study-hub", "study-hub.js?v=1.0.0"],
-      ["data-study-hub-pro", "study-hub-pro.js?v=1.0.0"]
+      ["data-study-hub-pro", "study-hub-pro.js?v=1.0.0"],
+      ["data-study-hub-insights-plus", "study-hub-insights-plus.js?v=1.0.0"]
     ];
 
     scripts.forEach(([attr, src]) => {
