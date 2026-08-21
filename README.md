@@ -1,4 +1,4 @@
-# MEDORA v0.1 — Upload Package
+# MEDORA v0.2 — Upload Package
 
 **Tagline:** Your life. Your goals. Your people.
 
@@ -84,3 +84,21 @@ If all four save and remain after refresh, the frontend↔Supabase connection is
 ## Version
 
 Medora v0.1 — Auth + Onboarding + Core Dashboard
+
+
+## v0.2 — Interests & Hobbies
+
+New first-class module:
+- My Interests page
+- Professional interests + hobbies
+- Experience/activity levels
+- Public / connections / private visibility
+- Featured profile interests
+- Explore catalog + category filters + search
+- Custom interests
+- Individual interest pages
+- People who share an interest
+- Shared-interest matching
+- Connection requests from discovery
+
+The Supabase backend for this module has already been applied to the connected Medora project.

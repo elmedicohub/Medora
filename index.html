@@ -129,6 +129,9 @@
         <button class="nav-item" data-screen="goals">
           <span class="nav-icon">◎</span><span>Goals</span>
         </button>
+        <button class="nav-item" data-screen="interests">
+          <span class="nav-icon">✦</span><span>Interests</span>
+        </button>
         <button class="nav-item" data-screen="people">
           <span class="nav-icon">◌</span><span>People</span>
         </button>
@@ -169,6 +172,7 @@
       <button class="mobile-nav-item active" data-screen="day"><span>⌂</span><small>My Day</small></button>
       <button class="mobile-nav-item" data-screen="planner"><span>▦</span><small>Planner</small></button>
       <button class="mobile-nav-item" data-screen="goals"><span>◎</span><small>Goals</small></button>
+      <button class="mobile-nav-item" data-screen="interests"><span>✦</span><small>Interests</small></button>
       <button class="mobile-nav-item" data-screen="people"><span>◌</span><small>People</small></button>
       <button class="mobile-nav-item" data-screen="profile"><span>○</span><small>More</small></button>
     </nav>
@@ -235,6 +239,89 @@
           <button id="finishOnboarding" class="primary-button">Enter Medora <span>→</span></button>
         </div>
       </div>
+    </section>
+  </div>
+
+
+  <div id="interestEditorModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <section class="modal-card compact-modal">
+      <button class="modal-close" data-close-modal="interestEditorModal" aria-label="Close">×</button>
+      <span class="eyebrow">MY INTEREST</span>
+      <h2 id="interestEditorTitle">Add to my interests</h2>
+      <form id="interestEditorForm">
+        <input id="interestEditorInterestId" type="hidden" />
+        <div class="interest-modal-identity">
+          <span id="interestEditorIcon" class="interest-modal-icon">✦</span>
+          <div>
+            <strong id="interestEditorName">Interest</strong>
+            <small id="interestEditorCategory">Category</small>
+          </div>
+        </div>
+        <div class="two-col">
+          <label><span>Use it as</span>
+            <select id="interestEditorType">
+              <option value="hobby">Hobby / personal</option>
+              <option value="professional">Professional interest</option>
+            </select>
+          </label>
+          <label><span>Experience</span>
+            <select id="interestEditorExperience">
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+              <option value="expert">Expert</option>
+            </select>
+          </label>
+        </div>
+        <div class="two-col">
+          <label><span>How active?</span>
+            <select id="interestEditorActivity">
+              <option value="exploring">Exploring</option>
+              <option value="occasional">Occasional</option>
+              <option value="regular">Regular</option>
+              <option value="core">Core part of my life</option>
+            </select>
+          </label>
+          <label><span>Who can see it?</span>
+            <select id="interestEditorVisibility">
+              <option value="public">Everyone on Medora</option>
+              <option value="connections">Connections only</option>
+              <option value="private">Only me</option>
+            </select>
+          </label>
+        </div>
+        <label><span>My note</span><textarea id="interestEditorNotes" rows="3" maxlength="600" placeholder="Why does this interest matter to you?"></textarea></label>
+        <label class="toggle-line">
+          <input id="interestEditorFeatured" type="checkbox" />
+          <span>Feature this interest on my profile</span>
+        </label>
+        <button class="primary-button" type="submit">Save interest <span>→</span></button>
+      </form>
+    </section>
+  </div>
+
+  <div id="customInterestModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <section class="modal-card compact-modal">
+      <button class="modal-close" data-close-modal="customInterestModal" aria-label="Close">×</button>
+      <span class="eyebrow">CREATE YOUR OWN</span>
+      <h2>Add a new interest to Medora.</h2>
+      <p>If it is not already in Explore, create it and make it part of your page.</p>
+      <form id="customInterestForm">
+        <label><span>Name</span><input id="customInterestName" required maxlength="100" placeholder="e.g. Mountain hiking" /></label>
+        <div class="two-col">
+          <label><span>Category</span><select id="customInterestCategory"></select></label>
+          <label><span>Best fit</span>
+            <select id="customInterestKind">
+              <option value="hobby">Hobby / personal</option>
+              <option value="professional">Professional</option>
+              <option value="general">General</option>
+            </select>
+          </label>
+        </div>
+        <label><span>Description</span><textarea id="customInterestDescription" rows="3" maxlength="500" placeholder="A short description"></textarea></label>
+        <label><span>Icon</span><input id="customInterestIcon" maxlength="8" placeholder="✨" /></label>
+        <button class="primary-button" type="submit">Create & add <span>→</span></button>
+      </form>
     </section>
   </div>
 

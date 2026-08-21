@@ -29,7 +29,17 @@
     achievements: [],
     circles: [],
     notifications: [],
-    currentScreen: "day"
+    connections: [],
+    interestCategories: [],
+    interests: [],
+    userInterests: [],
+    publicProfiles: [],
+    currentScreen: "day",
+    interestTab: "mine",
+    interestSearch: "",
+    interestCategory: "all",
+    selectedInterestId: null,
+    editingInterestId: null
   };
 
   const el = (id) => document.getElementById(id);
@@ -195,19 +205,28 @@
     if (!state.user) return;
 
     const uid = state.user.id;
-    const [profileRes, professionalRes, goalsRes, tasksRes, achievementsRes, circlesRes, notificationsRes] =
-      await Promise.all([
-        db.from("profiles").select("*").eq("id", uid).maybeSingle(),
-        db.from("professional_profiles").select("*").eq("user_id", uid).maybeSingle(),
-        db.from("goals").select("*").eq("user_id", uid).order("created_at", { ascending: false }),
-        db.from("tasks").select("*").eq("user_id", uid).order("due_at", { ascending: true, nullsFirst: false }),
-        db.from("achievements").select("*").eq("user_id", uid).order("achieved_on", { ascending: false }),
-        db.from("circles").select("*").order("created_at", { ascending: false }),
-        db.from("notifications").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(25)
-      ]);
+    const [
+      profileRes, professionalRes, goalsRes, tasksRes, achievementsRes, circlesRes,
+      notificationsRes, connectionsRes, categoriesRes, interestsRes, userInterestsRes, publicProfilesRes
+    ] = await Promise.all([
+      db.from("profiles").select("*").eq("id", uid).maybeSingle(),
+      db.from("professional_profiles").select("*").eq("user_id", uid).maybeSingle(),
+      db.from("goals").select("*").eq("user_id", uid).order("created_at", { ascending: false }),
+      db.from("tasks").select("*").eq("user_id", uid).order("due_at", { ascending: true, nullsFirst: false }),
+      db.from("achievements").select("*").eq("user_id", uid).order("achieved_on", { ascending: false }),
+      db.from("circles").select("*").order("created_at", { ascending: false }),
+      db.from("notifications").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(25),
+      db.from("connections").select("*").order("created_at", { ascending: false }),
+      db.from("interest_categories").select("*").order("sort_order", { ascending: true }),
+      db.from("interests").select("*").eq("is_active", true).order("name", { ascending: true }),
+      db.from("user_interests").select("*").order("created_at", { ascending: false }),
+      db.from("public_profiles").select("*").eq("is_visible", true)
+    ]);
 
-    const failures = [profileRes, professionalRes, goalsRes, tasksRes, achievementsRes, circlesRes, notificationsRes]
-      .filter((x) => x.error);
+    const failures = [
+      profileRes, professionalRes, goalsRes, tasksRes, achievementsRes, circlesRes,
+      notificationsRes, connectionsRes, categoriesRes, interestsRes, userInterestsRes, publicProfilesRes
+    ].filter((x) => x.error);
 
     if (failures.length) {
       console.warn("Medora load warnings:", failures.map((x) => x.error));
@@ -220,6 +239,11 @@
     state.achievements = achievementsRes.data || [];
     state.circles = circlesRes.data || [];
     state.notifications = notificationsRes.data || [];
+    state.connections = connectionsRes.data || [];
+    state.interestCategories = categoriesRes.data || [];
+    state.interests = interestsRes.data || [];
+    state.userInterests = userInterestsRes.data || [];
+    state.publicProfiles = publicProfilesRes.data || [];
 
     updateIdentityUI();
 
@@ -350,6 +374,7 @@
     day: ["MY DAY", "Your day, clearly."],
     planner: ["PLANNER", "Make the next move obvious."],
     goals: ["GOALS", "Turn ambition into progress."],
+    interests: ["INTERESTS", "Build a life that feels like yours."],
     people: ["PEOPLE", "Grow with the right people."],
     progress: ["PROGRESS", "See how far you have come."],
     profile: ["PROFILE", "Your Medora, your way."]
@@ -380,6 +405,7 @@
       day: renderDay,
       planner: renderPlanner,
       goals: renderGoals,
+      interests: renderInterests,
       people: renderPeople,
       progress: renderProgress,
       profile: renderProfile
@@ -448,6 +474,7 @@
             <div class="hero-actions">
               <button class="hero-action primary" data-open-quick-task>Add a task</button>
               <button class="hero-action" data-go="goals">Review goals</button>
+              <button class="hero-action" data-go="interests">Explore interests</button>
               <button class="hero-action" data-go="people">Your people</button>
             </div>
           </article>
@@ -631,6 +658,502 @@
     `;
   }
 
+
+  function myUserInterests() {
+    return state.userInterests.filter((item) => item.user_id === state.user?.id);
+  }
+
+  function interestById(id) {
+    return state.interests.find((item) => item.id === id);
+  }
+
+  function categoryById(id) {
+    return state.interestCategories.find((item) => item.id === id);
+  }
+
+  function myInterestRecord(interestId) {
+    return myUserInterests().find((item) => item.interest_id === interestId);
+  }
+
+  function publicInterestUsers(interestId) {
+    const rows = state.userInterests.filter(
+      (item) =>
+        item.interest_id === interestId &&
+        item.user_id !== state.user?.id &&
+        item.visibility === "public"
+    );
+    return rows
+      .map((row) => ({
+        row,
+        profile: state.publicProfiles.find((p) => p.user_id === row.user_id)
+      }))
+      .filter((x) => x.profile);
+  }
+
+  function visiblePeopleMatches() {
+    const mine = myUserInterests().map((x) => x.interest_id);
+    if (!mine.length) return [];
+
+    const byUser = new Map();
+    state.userInterests
+      .filter(
+        (item) =>
+          item.user_id !== state.user?.id &&
+          item.visibility === "public" &&
+          mine.includes(item.interest_id)
+      )
+      .forEach((item) => {
+        const profile = state.publicProfiles.find((p) => p.user_id === item.user_id);
+        if (!profile) return;
+        if (!byUser.has(item.user_id)) byUser.set(item.user_id, { profile, rows: [] });
+        byUser.get(item.user_id).rows.push(item);
+      });
+
+    return [...byUser.values()].sort((a, b) => b.rows.length - a.rows.length);
+  }
+
+  function connectionWith(userId) {
+    return state.connections.find(
+      (c) =>
+        (c.requester_id === state.user?.id && c.addressee_id === userId) ||
+        (c.addressee_id === state.user?.id && c.requester_id === userId)
+    );
+  }
+
+  function renderInterests() {
+    if (state.selectedInterestId) return renderInterestDetail(state.selectedInterestId);
+
+    const mine = myUserInterests();
+    const professional = mine.filter((x) => x.interest_type === "professional");
+    const hobbies = mine.filter((x) => x.interest_type === "hobby");
+
+    return `
+      <section class="screen">
+        <article class="interests-hero">
+          <span class="eyebrow light">INTERESTS & HOBBIES</span>
+          <h1>More than your job title.</h1>
+          <p>
+            Build your own page of the things you care about — professional interests,
+            hobbies, skills you are exploring, and the people who share them.
+          </p>
+          <div class="interest-summary-strip">
+            <span class="pill">${mine.length} on my page</span>
+            <span class="pill">${professional.length} professional</span>
+            <span class="pill">${hobbies.length} hobbies</span>
+            <span class="pill">${visiblePeopleMatches().length} people with shared interests</span>
+          </div>
+        </article>
+
+        <div class="interest-tabs">
+          <button class="interest-tab ${state.interestTab === "mine" ? "active" : ""}" data-interest-tab="mine">My Interests</button>
+          <button class="interest-tab ${state.interestTab === "explore" ? "active" : ""}" data-interest-tab="explore">Explore</button>
+          <button class="interest-tab ${state.interestTab === "people" ? "active" : ""}" data-interest-tab="people">People</button>
+        </div>
+
+        ${state.interestTab === "mine" ? renderMyInterests() : ""}
+        ${state.interestTab === "explore" ? renderExploreInterests() : ""}
+        ${state.interestTab === "people" ? renderInterestPeople() : ""}
+      </section>
+    `;
+  }
+
+  function renderMyInterests() {
+    const mine = myUserInterests();
+    const rows = mine.map((item) => ({ item, interest: interestById(item.interest_id) })).filter((x) => x.interest);
+
+    return `
+      <div class="interest-toolbar">
+        <div>
+          <strong>Your page</strong>
+          <div style="margin-top:4px;color:var(--muted);font-size:12px">Choose what represents you and who gets to see it.</div>
+        </div>
+        <div class="screen-actions">
+          <button class="ghost-button" data-interest-tab="explore">Browse Explore</button>
+          <button class="soft-button" data-open-custom-interest>+ Create interest</button>
+        </div>
+      </div>
+
+      ${rows.length ? `
+        <div class="interest-grid">
+          ${rows.map(({ item, interest }) => interestMyCard(item, interest)).join("")}
+        </div>
+      ` : `
+        <div class="panel">
+          ${emptyState("Your interests page is waiting", "Explore the catalog and add the professional interests, hobbies and curiosities that feel like you.")}
+          <div style="display:flex;justify-content:center;margin-top:14px">
+            <button class="primary-button" style="max-width:220px" data-interest-tab="explore">Explore interests <span>→</span></button>
+          </div>
+        </div>
+      `}
+    `;
+  }
+
+  function interestMyCard(item, interest) {
+    const category = categoryById(interest.category_id);
+    return `
+      <article class="interest-card">
+        <div class="interest-card-top">
+          <span class="interest-icon">${escapeHtml(interest.icon || "✦")}</span>
+          ${item.featured ? '<span class="pill success">Featured</span>' : `<span class="pill">${escapeHtml(item.visibility)}</span>`}
+        </div>
+        <h3>${escapeHtml(interest.name)}</h3>
+        <p>${escapeHtml(item.notes || interest.description || "Part of your Medora interests page.")}</p>
+        <div class="meta-row">
+          <span class="pill">${escapeHtml(item.interest_type === "professional" ? "Professional" : "Hobby")}</span>
+          <span class="pill">${escapeHtml(item.experience_level)}</span>
+          <span class="pill">${escapeHtml(item.activity_level)}</span>
+          ${category ? `<span class="pill">${escapeHtml(category.name)}</span>` : ""}
+        </div>
+        <div class="interest-card-actions">
+          <button class="ghost-button" data-view-interest="${interest.id}">Open page</button>
+          <button class="soft-button" data-edit-interest="${interest.id}">Edit</button>
+          <button class="danger-button" data-remove-interest="${interest.id}">Remove</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderExploreInterests() {
+    const search = (state.interestSearch || "").trim().toLowerCase();
+    const filtered = state.interests.filter((interest) => {
+      const categoryMatch =
+        state.interestCategory === "all" || interest.category_id === state.interestCategory;
+      const textMatch =
+        !search ||
+        interest.name.toLowerCase().includes(search) ||
+        (interest.description || "").toLowerCase().includes(search);
+      return categoryMatch && textMatch;
+    });
+
+    return `
+      <div class="interest-toolbar">
+        <div class="interest-search">
+          <input id="interestSearchInput" value="${escapeHtml(state.interestSearch)}" placeholder="Search interests, hobbies, specialties..." />
+        </div>
+        <button class="soft-button" data-open-custom-interest>+ Create your own</button>
+      </div>
+
+      <div class="category-chips">
+        <button class="category-chip ${state.interestCategory === "all" ? "active" : ""}" data-interest-category="all">All</button>
+        ${state.interestCategories.map((category) => `
+          <button class="category-chip ${state.interestCategory === category.id ? "active" : ""}" data-interest-category="${category.id}">
+            ${escapeHtml(category.icon || "✦")} ${escapeHtml(category.name)}
+          </button>
+        `).join("")}
+      </div>
+
+      ${filtered.length ? `
+        <div class="interest-grid">
+          ${filtered.map(interestExploreCard).join("")}
+        </div>
+      ` : emptyState("Nothing matched that search", "Try another term, change category, or create your own interest.")}
+    `;
+  }
+
+  function interestExploreCard(interest) {
+    const category = categoryById(interest.category_id);
+    const mine = myInterestRecord(interest.id);
+    const peopleCount = publicInterestUsers(interest.id).length;
+    return `
+      <article class="interest-card">
+        <div class="interest-card-top">
+          <span class="interest-icon">${escapeHtml(interest.icon || "✦")}</span>
+          ${mine ? '<span class="pill success">On my page</span>' : `<span class="pill">${escapeHtml(interest.kind)}</span>`}
+        </div>
+        <h3>${escapeHtml(interest.name)}</h3>
+        <p>${escapeHtml(interest.description || "Explore this interest on Medora.")}</p>
+        <div class="meta-row">
+          ${category ? `<span class="pill">${escapeHtml(category.name)}</span>` : ""}
+          <span class="pill">${peopleCount} ${peopleCount === 1 ? "person" : "people"}</span>
+        </div>
+        <div class="interest-card-actions">
+          <button class="ghost-button" data-view-interest="${interest.id}">View</button>
+          ${mine
+            ? `<button class="soft-button" data-edit-interest="${interest.id}">Edit mine</button>`
+            : `<button class="soft-button" data-add-interest="${interest.id}">+ Add to mine</button>`}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderInterestPeople() {
+    const matches = visiblePeopleMatches();
+    return `
+      <div class="interest-section-title">
+        <div>
+          <h2>People who overlap with your world</h2>
+          <p>Only discoverable profiles with public shared interests appear here.</p>
+        </div>
+      </div>
+
+      <div class="task-list">
+        ${matches.length ? matches.map(({ profile, rows }) => {
+          const connection = connectionWith(profile.user_id);
+          return `
+            <article class="interest-user-card">
+              <span class="people-avatar">${escapeHtml(initials(profile.display_name))}</span>
+              <div>
+                <h3>${escapeHtml(profile.display_name || "Medora member")}</h3>
+                <p>${escapeHtml(profile.headline || profile.specialty || profile.profession || "Medora member")}${profile.city ? ` · ${escapeHtml(profile.city)}` : ""}</p>
+                <div class="shared-tags">
+                  ${rows.slice(0,5).map((row) => {
+                    const interest = interestById(row.interest_id);
+                    return interest ? `<span class="pill">${escapeHtml(interest.icon || "✦")} ${escapeHtml(interest.name)}</span>` : "";
+                  }).join("")}
+                  ${rows.length > 5 ? `<span class="pill">+${rows.length - 5} more</span>` : ""}
+                </div>
+              </div>
+              ${connection
+                ? `<button class="ghost-button" disabled>${connection.status === "accepted" ? "Connected" : "Request sent"}</button>`
+                : `<button class="soft-button" data-connect-user="${profile.user_id}">Connect</button>`}
+            </article>
+          `;
+        }).join("") : emptyState(
+          myUserInterests().length ? "No shared-interest people yet" : "Add interests first",
+          myUserInterests().length
+            ? "As more Medora users make interests public, shared-interest people will appear here."
+            : "Build your interests page first, then Medora can find meaningful overlaps."
+        )}
+      </div>
+    `;
+  }
+
+  function renderInterestDetail(interestId) {
+    const interest = interestById(interestId);
+    if (!interest) {
+      state.selectedInterestId = null;
+      return renderInterests();
+    }
+    const category = categoryById(interest.category_id);
+    const mine = myInterestRecord(interest.id);
+    const people = publicInterestUsers(interest.id);
+
+    return `
+      <section class="screen">
+        <div class="screen-heading">
+          <div><button class="text-button" data-close-interest-detail>← Back to Interests</button></div>
+        </div>
+        <div class="interest-detail-grid">
+          <article class="interest-detail-main">
+            <span class="interest-icon">${escapeHtml(interest.icon || "✦")}</span>
+            <h1>${escapeHtml(interest.name)}</h1>
+            <p>${escapeHtml(interest.description || "A Medora interest.")}</p>
+            <div class="meta-row">
+              ${category ? `<span class="pill">${escapeHtml(category.icon || "✦")} ${escapeHtml(category.name)}</span>` : ""}
+              <span class="pill">${escapeHtml(interest.kind)}</span>
+              <span class="pill">${people.length} public ${people.length === 1 ? "person" : "people"}</span>
+            </div>
+            <div class="interest-card-actions" style="max-width:420px">
+              ${mine
+                ? `<button class="primary-button" data-edit-interest="${interest.id}">Edit my interest <span>→</span></button>`
+                : `<button class="primary-button" data-add-interest="${interest.id}">Add to my page <span>→</span></button>`}
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-header">
+              <div><h3>People who share it</h3><p>Discoverable members who made this interest public.</p></div>
+            </div>
+            <div class="task-list">
+              ${people.length ? people.slice(0,12).map(({ row, profile }) => `
+                <article class="interest-user-card">
+                  <span class="people-avatar">${escapeHtml(initials(profile.display_name))}</span>
+                  <div>
+                    <h3>${escapeHtml(profile.display_name)}</h3>
+                    <p>${escapeHtml(profile.specialty || profile.profession || profile.headline || "Medora member")}</p>
+                    <div class="shared-tags">
+                      <span class="pill">${escapeHtml(row.experience_level)}</span>
+                      <span class="pill">${escapeHtml(row.activity_level)}</span>
+                    </div>
+                  </div>
+                  ${connectionWith(profile.user_id)
+                    ? `<button class="ghost-button" disabled>${connectionWith(profile.user_id).status === "accepted" ? "Connected" : "Request sent"}</button>`
+                    : `<button class="soft-button" data-connect-user="${profile.user_id}">Connect</button>`}
+                </article>
+              `).join("") : emptyState("Be the first visible person here", "Other public Medora members who share this interest will appear here.")}
+            </div>
+          </article>
+        </div>
+      </section>
+    `;
+  }
+
+  function populateInterestEditor(interestId) {
+    const interest = interestById(interestId);
+    if (!interest) return;
+    const category = categoryById(interest.category_id);
+    const existing = myInterestRecord(interestId);
+    state.editingInterestId = interestId;
+
+    el("interestEditorInterestId").value = interestId;
+    el("interestEditorIcon").textContent = interest.icon || "✦";
+    el("interestEditorName").textContent = interest.name;
+    el("interestEditorCategory").textContent = category?.name || "Interest";
+    el("interestEditorType").value = existing?.interest_type || (interest.kind === "professional" ? "professional" : "hobby");
+    el("interestEditorExperience").value = existing?.experience_level || "beginner";
+    el("interestEditorActivity").value = existing?.activity_level || "exploring";
+    el("interestEditorVisibility").value = existing?.visibility || "public";
+    el("interestEditorNotes").value = existing?.notes || "";
+    el("interestEditorFeatured").checked = Boolean(existing?.featured);
+    el("interestEditorTitle").textContent = existing ? "Edit my interest" : "Add to my interests";
+    el("interestEditorModal").classList.remove("hidden");
+  }
+
+  async function saveInterestEditor(event) {
+    event.preventDefault();
+    const button = qs('button[type="submit"]', event.currentTarget);
+    setLoading(button, true, "Saving…");
+
+    const interestId = el("interestEditorInterestId").value;
+    const payload = {
+      user_id: state.user.id,
+      interest_id: interestId,
+      interest_type: el("interestEditorType").value,
+      experience_level: el("interestEditorExperience").value,
+      activity_level: el("interestEditorActivity").value,
+      visibility: el("interestEditorVisibility").value,
+      notes: el("interestEditorNotes").value.trim() || null,
+      featured: el("interestEditorFeatured").checked
+    };
+
+    const result = await db
+      .from("user_interests")
+      .upsert(payload, { onConflict: "user_id,interest_id" })
+      .select()
+      .single();
+
+    setLoading(button, false);
+
+    if (result.error) {
+      toast(result.error.message, "error");
+      return;
+    }
+
+    const index = state.userInterests.findIndex(
+      (x) => x.user_id === state.user.id && x.interest_id === interestId
+    );
+    if (index >= 0) state.userInterests[index] = result.data;
+    else state.userInterests.unshift(result.data);
+
+    el("interestEditorModal").classList.add("hidden");
+    toast("Interest saved to your page.", "success");
+    renderScreen();
+  }
+
+  async function removeInterest(interestId) {
+    const interest = interestById(interestId);
+    if (!confirm(`Remove ${interest?.name || "this interest"} from your page?`)) return;
+
+    const result = await db
+      .from("user_interests")
+      .delete()
+      .eq("user_id", state.user.id)
+      .eq("interest_id", interestId);
+
+    if (result.error) {
+      toast(result.error.message, "error");
+      return;
+    }
+
+    state.userInterests = state.userInterests.filter(
+      (x) => !(x.user_id === state.user.id && x.interest_id === interestId)
+    );
+    toast("Removed from your interests.");
+    renderScreen();
+  }
+
+  function openCustomInterest() {
+    el("customInterestForm").reset();
+    const select = el("customInterestCategory");
+    select.innerHTML =
+      `<option value="">Uncategorized</option>` +
+      state.interestCategories.map(
+        (c) => `<option value="${c.id}">${escapeHtml(c.icon || "✦")} ${escapeHtml(c.name)}</option>`
+      ).join("");
+    el("customInterestModal").classList.remove("hidden");
+    setTimeout(() => el("customInterestName").focus(), 80);
+  }
+
+  function slugifyInterest(value) {
+    return value
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .slice(0, 60) || "interest";
+  }
+
+  async function createCustomInterest(event) {
+    event.preventDefault();
+    const button = qs('button[type="submit"]', event.currentTarget);
+    const name = el("customInterestName").value.trim();
+    if (!name) return;
+
+    const existing = state.interests.find((x) => x.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      el("customInterestModal").classList.add("hidden");
+      populateInterestEditor(existing.id);
+      toast("That interest already exists — add it to your page.", "success");
+      return;
+    }
+
+    setLoading(button, true, "Creating…");
+    const slug = `${slugifyInterest(name)}-${state.user.id.slice(0, 6)}-${Date.now().toString(36)}`;
+
+    const created = await db
+      .from("interests")
+      .insert({
+        category_id: el("customInterestCategory").value || null,
+        slug,
+        name,
+        description: el("customInterestDescription").value.trim() || null,
+        icon: el("customInterestIcon").value.trim() || "✨",
+        kind: el("customInterestKind").value,
+        created_by: state.user.id,
+        is_active: true
+      })
+      .select()
+      .single();
+
+    setLoading(button, false);
+
+    if (created.error) {
+      toast(created.error.message, "error");
+      return;
+    }
+
+    state.interests.push(created.data);
+    state.interests.sort((a, b) => a.name.localeCompare(b.name));
+    el("customInterestModal").classList.add("hidden");
+    populateInterestEditor(created.data.id);
+    toast("Interest created. Now make it yours.", "success");
+  }
+
+  async function connectToUser(userId) {
+    if (!userId || userId === state.user.id || connectionWith(userId)) return;
+
+    const result = await db
+      .from("connections")
+      .insert({
+        requester_id: state.user.id,
+        addressee_id: userId,
+        status: "pending"
+      })
+      .select()
+      .single();
+
+    if (result.error) {
+      toast(result.error.message, "error");
+      return;
+    }
+
+    state.connections.unshift(result.data);
+    toast("Connection request sent.", "success");
+    renderScreen();
+  }
+
   function renderPeople() {
     return `
       <section class="screen">
@@ -638,6 +1161,9 @@
           <span class="eyebrow light">YOUR PEOPLE</span>
           <h2>Progress is rarely a solo project.</h2>
           <p>Create circles for the people you study with, work with, learn from, or simply want to stay close to.</p>
+          <div class="hero-actions">
+            <button class="hero-action primary" data-go="interests">Find people by interests</button>
+          </div>
         </article>
 
         <div class="dashboard-grid">
@@ -783,6 +1309,21 @@
             </form>
           </article>
         </div>
+
+        <article class="panel profile-interest-panel">
+          <div class="panel-header">
+            <div><h3>Interests & hobbies</h3><p>The parts of your profile that go beyond titles and qualifications.</p></div>
+            <button class="link-button" data-go="interests">Manage interests</button>
+          </div>
+          ${myUserInterests().length ? `
+            <div class="profile-interest-cloud">
+              ${myUserInterests().slice(0,12).map((row) => {
+                const interest = interestById(row.interest_id);
+                return interest ? `<button class="profile-interest-chip" data-view-interest="${interest.id}">${escapeHtml(interest.icon || "✦")} ${escapeHtml(interest.name)}</button>` : "";
+              }).join("")}
+            </div>
+          ` : emptyState("No interests on your profile yet", "Add professional interests and hobbies to make your Medora profile feel like you.")}
+        </article>
       </section>
     `;
   }
@@ -821,6 +1362,57 @@
     qsa("[data-signout]").forEach((button) =>
       button.addEventListener("click", signOut)
     );
+
+    qsa("[data-interest-tab]").forEach((button) =>
+      button.addEventListener("click", () => {
+        state.interestTab = button.dataset.interestTab;
+        state.selectedInterestId = null;
+        renderScreen();
+      })
+    );
+    qsa("[data-interest-category]").forEach((button) =>
+      button.addEventListener("click", () => {
+        state.interestCategory = button.dataset.interestCategory;
+        renderScreen();
+      })
+    );
+    qsa("[data-add-interest], [data-edit-interest]").forEach((button) =>
+      button.addEventListener("click", () =>
+        populateInterestEditor(button.dataset.addInterest || button.dataset.editInterest)
+      )
+    );
+    qsa("[data-remove-interest]").forEach((button) =>
+      button.addEventListener("click", () => removeInterest(button.dataset.removeInterest))
+    );
+    qsa("[data-view-interest]").forEach((button) =>
+      button.addEventListener("click", () => {
+        state.selectedInterestId = button.dataset.viewInterest;
+        state.interestTab = "explore";
+        if (state.currentScreen !== "interests") navigate("interests");
+        else renderScreen();
+      })
+    );
+    qsa("[data-close-interest-detail]").forEach((button) =>
+      button.addEventListener("click", () => {
+        state.selectedInterestId = null;
+        renderScreen();
+      })
+    );
+    qsa("[data-open-custom-interest]").forEach((button) =>
+      button.addEventListener("click", openCustomInterest)
+    );
+    qsa("[data-connect-user]").forEach((button) =>
+      button.addEventListener("click", () => connectToUser(button.dataset.connectUser))
+    );
+
+    const searchInput = el("interestSearchInput");
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        state.interestSearch = searchInput.value;
+        clearTimeout(searchInput._timer);
+        searchInput._timer = setTimeout(renderScreen, 220);
+      });
+    }
 
     el("plannerTaskForm")?.addEventListener("submit", createPlannerTask);
     el("goalForm")?.addEventListener("submit", createGoal);
@@ -1172,6 +1764,8 @@
     el("avatarButton").addEventListener("click", () => navigate("profile"));
     el("quickTaskButton").addEventListener("click", openQuickTask);
     el("quickTaskForm").addEventListener("submit", createQuickTask);
+    el("interestEditorForm").addEventListener("submit", saveInterestEditor);
+    el("customInterestForm").addEventListener("submit", createCustomInterest);
 
     qsa("[data-close-modal]").forEach((button) =>
       button.addEventListener("click", () => closeModal(button.dataset.closeModal))
