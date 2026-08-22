@@ -17,9 +17,33 @@
       .lm-template[data-template="prayers"] strong{padding-right:76px}
       .lm-template[data-template="prayers"] small{line-height:1.45}
       .mpp-note{display:inline-flex;align-items:center;gap:6px;margin-top:7px;padding:6px 9px;border-radius:999px;background:#f1f4ff;color:#6672cb;font-size:8px;font-weight:850}
+      .mpp-prayer-preset{display:grid;gap:4px;margin:-2px 0 8px;padding:11px 12px;border:1px solid #e1dcfb;border-radius:13px;background:linear-gradient(135deg,#faf9ff,#f2f6ff);color:#5d6681}
+      .mpp-prayer-preset strong{font-size:10px;color:#3e4760}.mpp-prayer-preset span{font-size:8px;line-height:1.45}
       @media(max-width:620px){.lm-template[data-template="prayers"]::before{position:static;display:inline-flex;width:max-content;margin:0 0 8px}.lm-template[data-template="prayers"] strong{padding-right:0}}
     `;
     document.head.appendChild(style);
+  }
+
+  function customizePrayerModal() {
+    const form = $('#lmPlanForm');
+    const title = $('#lmPlanTitle');
+    const due = $('#lmDueTime');
+    if (!form || !title || !due) return false;
+
+    title.value = 'Five daily prayers';
+    due.value = '23:00';
+
+    const modalHead = form.closest('.lm-modal')?.querySelector('.lm-modal-head h2');
+    if (modalHead) modalHead.textContent = '🕌 Five daily prayers';
+
+    if (!form.querySelector('.mpp-prayer-preset')) {
+      const box = document.createElement('div');
+      box.className = 'mpp-prayer-preset';
+      box.innerHTML = '<strong>Prepared prayer routine</strong><span>Fajr · Dhuhr · Asr · Maghrib · Isha · 🏠 Home / 🕌 Mosque · ✦ Sunnah · 📿 Azkar · daily habit score /100</span>';
+      const firstLabel = form.querySelector('label');
+      firstLabel?.insertAdjacentElement('afterend', box);
+    }
+    return true;
   }
 
   function enhance() {
@@ -74,8 +98,14 @@
 
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
   document.addEventListener('click', e => {
+    const prayerCard = e.target.closest('.lm-template[data-template="prayers"]');
+    if (prayerCard) {
+      // planner-brain opens its modal in the same click. Customize it immediately
+      // afterwards without duplicating or replacing the core create-plan logic.
+      [0, 30, 80].forEach(ms => setTimeout(customizePrayerModal, ms));
+    }
     if (e.target.closest('[data-screen="planner"], [data-tab="explore"], [data-start-plan]')) schedule();
-  }, true);
+  }, false);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enhance, { once: true });
   else enhance();
