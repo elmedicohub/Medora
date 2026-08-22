@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-planner-tab-focus-v50";
+const CACHE = "medora-quran-revision-journal-v51";
 
 self.addEventListener("install", () => self.skipWaiting());
 
