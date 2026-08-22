@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-collab-v47";
+const CACHE = "medora-study-no-flash-v48";
 
 self.addEventListener("install", () => self.skipWaiting());
 
