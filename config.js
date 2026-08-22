@@ -19,7 +19,7 @@ window.MEDORA_CONFIG = {
   };
   const bootEnhancements = () => {
     load('data-medora-auth-redesign', 'auth-redesign.js?v=1.0.0');
-    load('data-medora-nav-order', 'nav-order.js?v=1.1.0');
+    load('data-medora-nav-order', 'nav-order.js?v=1.2.0');
     load('data-medora-brain', 'medora-brain.js?v=1.0.0');
     load('data-medora-progress-intelligence', 'progress-intelligence.js?v=1.0.0');
     load('data-medora-ambient-audio', 'ambient-audio.js?v=1.2.0');
