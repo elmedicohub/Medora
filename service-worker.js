@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-soft-keys-continuous-v33";
+const CACHE = "medora-planner-edit-v34";
 
 self.addEventListener("install", () => self.skipWaiting());
 
