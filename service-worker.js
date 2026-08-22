@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-plan-accountability-v37";
+const CACHE = "medora-plan-links-v38";
 
 self.addEventListener("install", () => self.skipWaiting());
 
