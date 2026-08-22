@@ -7,19 +7,129 @@
   <meta http-equiv="Cache-Control" content="no-store, max-age=0" />
   <title>Virtual Journey · Medora Travel</title>
   <link rel="icon" href="assets/icon-192.png" />
-  <link rel="stylesheet" href="travel-journey.css?v=4.2.0" />
-  <link rel="stylesheet" href="travel-journey-controls-v4.css?v=4.2.0" />
-  <link rel="stylesheet" href="travel-place-info.css?v=4.2.0" />
-  <link rel="stylesheet" href="travel-form-ux-v4.2.css?v=4.2.0" />
+  <link rel="stylesheet" href="travel-journey.css?v=4.3.0" />
+  <link rel="stylesheet" href="travel-journey-controls-v4.css?v=4.3.0" />
+  <link rel="stylesheet" href="travel-place-info.css?v=4.3.0" />
+  <style>
+    .embedded .journey-top{display:none}
+    .embedded .journey-app{padding-top:0}
+
+    /* Force readable form sizing. Kept inline so app/theme CSS cannot override it. */
+    .journey-modal{width:min(960px,calc(100vw - 32px))!important;padding:34px!important;border-radius:28px!important}
+    .journey-modal.wide{width:min(1080px,calc(100vw - 32px))!important}
+    .jm-head{gap:20px!important}
+    .jm-head .step-type{font-size:12px!important;line-height:1.3!important;letter-spacing:.14em!important}
+    .jm-head h2{margin:8px 0 0!important;font-size:36px!important;line-height:1.08!important;letter-spacing:-.045em!important}
+    .jm-head p{margin:9px 0 0!important;font-size:16px!important;line-height:1.5!important;color:#718096!important}
+    .jm-x{width:48px!important;height:48px!important;flex:0 0 48px!important;font-size:27px!important}
+    .jm-form{gap:18px!important;margin-top:24px!important}
+    .jm-grid2,.jm-grid3{gap:16px!important}
+    .jm-form label{gap:9px!important;font-size:15px!important;line-height:1.35!important;font-weight:800!important;color:#4f5e77!important}
+    .jm-form input,.jm-form select,.jm-form textarea{min-height:58px!important;padding:14px 16px!important;border-radius:15px!important;font-size:17px!important;font-weight:600!important;line-height:1.35!important;color:#17213a!important}
+    .jm-form input::placeholder,.jm-form textarea::placeholder{font-size:16px!important;color:#8a95a7!important;opacity:1!important}
+    .jm-form textarea{min-height:116px!important}
+    .jm-actions{gap:12px!important;margin-top:9px!important}
+    .jm-actions .jbtn{min-height:54px!important;font-size:15px!important;border-radius:14px!important}
+    .jm-date-hint{display:inline-flex!important;margin-left:6px!important;padding:3px 7px!important;border-radius:999px!important;background:#eef2ff!important;color:#6170b6!important;font-size:10px!important;font-weight:900!important}
+    .jm-date-input{font-variant-numeric:tabular-nums!important;letter-spacing:.03em!important}
+    @media(max-width:650px){
+      .journey-modal{padding:22px 18px!important;border-radius:22px!important}
+      .jm-head h2{font-size:29px!important}
+      .jm-head p{font-size:14px!important}
+      .jm-form label{font-size:14px!important}
+      .jm-form input,.jm-form select,.jm-form textarea{min-height:54px!important;font-size:16px!important}
+      .jm-actions .jbtn{font-size:14px!important}
+    }
+  </style>
   <script>
     if (new URLSearchParams(location.search).get('embedded') === '1') {
       document.documentElement.classList.add('embedded');
     }
+
+    /* Plan dates must be DD/MM/YYYY regardless of browser/Windows locale. */
+    (() => {
+      const IDS = new Set(['npStart','npEnd','epStart','epEnd']);
+      const isoToDisplay = value => {
+        const m = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        return m ? `${m[3]}/${m[2]}/${m[1]}` : (value || '');
+      };
+      const displayToIso = value => {
+        const s = String(value || '').trim();
+        if (!s) return '';
+        const m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (!m) return null;
+        const dd = Number(m[1]), mm = Number(m[2]), yyyy = Number(m[3]);
+        const d = new Date(Date.UTC(yyyy, mm - 1, dd));
+        if (yyyy < 1900 || yyyy > 2200 || mm < 1 || mm > 12 || dd < 1 || dd > 31 || d.getUTCFullYear() !== yyyy || d.getUTCMonth() !== mm - 1 || d.getUTCDate() !== dd) return null;
+        return `${String(yyyy).padStart(4,'0')}-${String(mm).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+      };
+      const formatTyping = input => {
+        const digits = input.value.replace(/\D/g,'').slice(0,8);
+        let out = digits.slice(0,2);
+        if (digits.length > 2) out += '/' + digits.slice(2,4);
+        if (digits.length > 4) out += '/' + digits.slice(4,8);
+        input.value = out;
+      };
+      const enhance = input => {
+        if (!input || !IDS.has(input.id) || input.dataset.ddmmyyyy === '1') return;
+        input.dataset.ddmmyyyy = '1';
+        const original = input.value;
+        input.type = 'text';
+        input.inputMode = 'numeric';
+        input.autocomplete = 'off';
+        input.maxLength = 10;
+        input.placeholder = 'DD/MM/YYYY';
+        input.classList.add('jm-date-input');
+        input.value = isoToDisplay(original);
+        const label = input.closest('label');
+        if (label && !label.querySelector('.jm-date-hint')) {
+          const hint = document.createElement('span');
+          hint.className = 'jm-date-hint';
+          hint.textContent = 'DD/MM/YYYY';
+          label.insertBefore(hint, input);
+        }
+        input.addEventListener('input', () => { input.setCustomValidity(''); formatTyping(input); });
+        input.addEventListener('blur', () => {
+          input.setCustomValidity(input.value && displayToIso(input.value) === null ? 'Use DD/MM/YYYY, for example 27/12/2026.' : '');
+        });
+      };
+      const scan = root => {
+        IDS.forEach(id => {
+          if (root?.id === id) enhance(root);
+          enhance(root?.querySelector?.(`#${id}`));
+        });
+      };
+      document.addEventListener('submit', event => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        const inputs = [...form.querySelectorAll('.jm-date-input')];
+        if (!inputs.length) return;
+        const restore = [];
+        for (const input of inputs) {
+          const shown = input.value;
+          const iso = displayToIso(shown);
+          if (iso === null) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            input.setCustomValidity('Use DD/MM/YYYY, for example 27/12/2026.');
+            input.reportValidity();
+            return;
+          }
+          input.setCustomValidity('');
+          restore.push([input, shown]);
+          input.value = iso;
+        }
+        setTimeout(() => restore.forEach(([input, shown]) => { if (document.contains(input)) input.value = shown; }), 0);
+      }, true);
+      const start = () => {
+        scan(document);
+        new MutationObserver(records => {
+          records.forEach(record => record.addedNodes.forEach(node => { if (node instanceof Element) scan(node); }));
+        }).observe(document.body,{childList:true,subtree:true});
+      };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true}); else start();
+    })();
   </script>
-  <style>
-    .embedded .journey-top{display:none}
-    .embedded .journey-app{padding-top:0}
-  </style>
 </head>
 <body>
   <div id="journeyToast" class="journey-toast" role="status" aria-live="polite"></div>
@@ -29,9 +139,8 @@
   <main id="journeyRoot" class="journey-app hidden"></main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.3"></script>
-  <script src="travel-runtime.js?v=4.2.0"></script>
-  <script src="travel-journey-v4.js?v=4.2.0" onerror="window.__MEDORA_TRAVEL_RUNTIME_ERROR__ && window.__MEDORA_TRAVEL_RUNTIME_ERROR__('The Virtual Journey script failed to load.')"></script>
-  <script src="travel-place-info.js?v=4.2.0"></script>
-  <script src="travel-date-format-v4.2.js?v=4.2.0"></script>
+  <script src="travel-runtime.js?v=4.3.0"></script>
+  <script src="travel-journey-v4.js?v=4.3.0" onerror="window.__MEDORA_TRAVEL_RUNTIME_ERROR__ && window.__MEDORA_TRAVEL_RUNTIME_ERROR__('The Virtual Journey script failed to load.')"></script>
+  <script src="travel-place-info.js?v=4.3.0"></script>
 </body>
 </html>
