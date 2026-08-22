@@ -3,11 +3,13 @@
 
   const DESKTOP_ICON = "◉";
   const MOBILE_ICON = "◉";
+  const TRAVEL_ICON = "✈";
   const NAV_ORDER = [
     '[data-screen="day"]',
     '[data-wall-link]',
     '[data-screen="goals"]',
     '[data-screen="planner"]',
+    '[data-travel-link]',
     '[data-study-link]',
     '[data-activity-link]',
     '[data-notes-link]',
@@ -27,6 +29,7 @@
       .main-nav,.mobile-nav{visibility:hidden!important}
       html.medora-nav-ready .main-nav,
       html.medora-nav-ready .mobile-nav{visibility:visible!important}
+      @media(max-width:820px){.mobile-nav.medora-travel-enabled{grid-template-columns:repeat(7,1fr)!important}}
     `;
     document.head.appendChild(style);
   }
@@ -104,6 +107,29 @@
     }
   }
 
+  function addTravelButtons() {
+    const mainNav = document.querySelector(".main-nav");
+    if (mainNav && !mainNav.querySelector("[data-travel-link]")) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "nav-item";
+      button.dataset.travelLink = "true";
+      button.innerHTML = `<span class="nav-icon">${TRAVEL_ICON}</span><span>Travel</span>`;
+      mainNav.appendChild(button);
+    }
+
+    const mobileNav = document.querySelector(".mobile-nav");
+    if (mobileNav && !mobileNav.querySelector("[data-travel-link]")) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "mobile-nav-item";
+      button.dataset.travelLink = "true";
+      button.innerHTML = `<span>${TRAVEL_ICON}</span><small>Travel</small>`;
+      mobileNav.appendChild(button);
+      mobileNav.classList.add("medora-travel-enabled");
+    }
+  }
+
   function applyNavOrder(container) {
     if (!container || navReordering) return;
     const wanted = NAV_ORDER.map(selector => container.querySelector(selector)).filter(Boolean);
@@ -152,7 +178,6 @@
 
     [0, 50, 100, 180, 300, 500, 800, 1200].forEach(ms => setTimeout(reorderNavigation, ms));
 
-    // Safety fallback: never leave navigation hidden if one optional module fails.
     setTimeout(() => {
       reorderNavigation();
       revealNavigation(true);
@@ -163,10 +188,20 @@
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.remove("active"));
   }
 
+  function clearTravelActive() {
+    document.querySelectorAll("[data-travel-link]").forEach(b => b.classList.remove("active"));
+  }
+
   function setWallActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link]")
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-travel-link]")
       .forEach(b => b.classList.remove("active"));
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.add("active"));
+  }
+
+  function setTravelActive() {
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-wall-link]")
+      .forEach(b => b.classList.remove("active"));
+    document.querySelectorAll("[data-travel-link]").forEach(b => b.classList.add("active"));
   }
 
   function styleEmbeddedWall(frame) {
@@ -188,6 +223,22 @@
     }
   }
 
+  function styleEmbeddedTravel(frame) {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc) return;
+      const style = doc.createElement("style");
+      style.textContent = `
+        .travel-topbar{display:none!important}
+        .travel-app{width:100%!important;max-width:none!important;padding:0 0 36px!important}
+        body{background:transparent!important}
+      `;
+      doc.head.appendChild(style);
+    } catch (e) {
+      console.warn("Travel styling skipped", e);
+    }
+  }
+
   function openWall(event) {
     event?.preventDefault();
     setWallActive();
@@ -205,8 +256,26 @@
     frame?.addEventListener("load", () => styleEmbeddedWall(frame), { once:true });
   }
 
+  function openTravel(event) {
+    event?.preventDefault();
+    setTravelActive();
+    const kicker = document.getElementById("topbarKicker");
+    const title = document.getElementById("topbarTitle");
+    const container = document.getElementById("screenContainer");
+    if (kicker) kicker.textContent = "TRAVEL";
+    if (title) title.textContent = "Your trip, from idea to arrival.";
+    if (!container) return;
+    container.innerHTML = `<section class="screen" aria-label="Medora Travel Planner">
+      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1"
+        style="width:100%;height:calc(100vh - 128px);min-height:720px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
+    </section>`;
+    const frame = document.getElementById("medoraTravelFrame");
+    frame?.addEventListener("load", () => styleEmbeddedTravel(frame), { once:true });
+  }
+
   function bind() {
     addWallButtons();
+    addTravelButtons();
     reorderNavigation();
     watchNavigation();
     loadDateFormatPatch();
@@ -214,8 +283,13 @@
 
     document.addEventListener("click", event => {
       const wall = event.target.closest("[data-wall-link]");
-      if (wall) { openWall(event); return; }
-      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) clearWallActive();
+      if (wall) { clearTravelActive(); openWall(event); return; }
+      const travel = event.target.closest("[data-travel-link]");
+      if (travel) { clearWallActive(); openTravel(event); return; }
+      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) {
+        clearWallActive();
+        clearTravelActive();
+      }
     }, true);
   }
 
