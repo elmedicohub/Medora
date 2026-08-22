@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-travel-history-v52";
+const CACHE = "medora-study-v2-travel-history-v53";
 
 self.addEventListener("install", () => self.skipWaiting());
 
