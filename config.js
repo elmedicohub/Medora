@@ -21,7 +21,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-nav-order', 'nav-order.js?v=1.1.0');
     load('data-medora-brain', 'medora-brain.js?v=1.0.0');
     load('data-medora-progress-intelligence', 'progress-intelligence.js?v=1.0.0');
-    load('data-medora-ambient-audio', 'ambient-audio.js?v=1.0.0');
+    load('data-medora-ambient-audio', 'ambient-audio.js?v=1.1.0');
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
   else bootEnhancements();
