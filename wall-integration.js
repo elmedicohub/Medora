@@ -266,7 +266,7 @@
     if (title) title.textContent = "Your trip, from idea to arrival.";
     if (!container) return;
     container.innerHTML = `<section class="screen" aria-label="Medora Travel Planner">
-      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1&v=2.1.0"
+      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1&v=4.3.0"
         style="width:100%;height:calc(100vh - 128px);min-height:720px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
     </section>`;
     const frame = document.getElementById("medoraTravelFrame");
