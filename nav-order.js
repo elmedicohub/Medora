@@ -9,6 +9,7 @@
     '[data-screen="goals"]',
     '[data-screen="planner"]',
     '[data-study-link]',
+    '[data-travel-link]',
     '[data-activity-link]',
     '[data-notes-link]',
     '[data-screen="progress"]',
