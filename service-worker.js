@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-sticky-topbar-v35";
+const CACHE = "medora-goal-cards-v36";
 
 self.addEventListener("install", () => self.skipWaiting());
 
