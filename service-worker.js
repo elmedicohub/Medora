@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-planner-edit-v34";
+const CACHE = "medora-sticky-topbar-v35";
 
 self.addEventListener("install", () => self.skipWaiting());
 
