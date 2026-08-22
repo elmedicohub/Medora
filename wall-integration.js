@@ -64,7 +64,6 @@
       document.head.appendChild(link);
     }
 
-    // Study is intentionally absent here. study-v2.js is the single Study owner.
     const scripts = [
       ["data-life-mind-script", "planner-brain.js?v=2.0.0"],
       ["data-life-mind-card-enhancement", "planner-card-enhancement.js?v=1.0.0"],
@@ -138,12 +137,10 @@
     if (!container || navReordering) return;
     const wanted = NAV_ORDER.map(selector => container.querySelector(selector)).filter(Boolean);
     if (!wanted.length) return;
-
     const wantedSet = new Set(wanted);
     const current = [...container.children].filter(node => wantedSet.has(node));
     const isCorrect = current.length === wanted.length && current.every((node, index) => node === wanted[index]);
     if (isCorrect) return;
-
     navReordering = true;
     wanted.forEach(node => container.appendChild(node));
     navReordering = false;
@@ -170,35 +167,25 @@
   }
 
   function watchNavigation() {
-    const observer = new MutationObserver(() => {
-      if (!navReordering) scheduleNavOrder();
-    });
+    const observer = new MutationObserver(() => { if (!navReordering) scheduleNavOrder(); });
     const mainNav = document.querySelector(".main-nav");
     const mobileNav = document.querySelector(".mobile-nav");
     if (mainNav) observer.observe(mainNav, { childList: true });
     if (mobileNav) observer.observe(mobileNav, { childList: true });
-
     [0, 50, 100, 180, 300, 500, 800, 1200].forEach(ms => setTimeout(reorderNavigation, ms));
     setTimeout(() => { reorderNavigation(); revealNavigation(true); }, 1800);
   }
 
-  function clearWallActive() {
-    document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.remove("active"));
-  }
-
-  function clearTravelActive() {
-    document.querySelectorAll("[data-travel-link]").forEach(b => b.classList.remove("active"));
-  }
+  function clearWallActive() { document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.remove("active")); }
+  function clearTravelActive() { document.querySelectorAll("[data-travel-link]").forEach(b => b.classList.remove("active")); }
 
   function setWallActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-travel-link]")
-      .forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-travel-link]").forEach(b => b.classList.remove("active"));
     document.querySelectorAll("[data-wall-link]").forEach(b => b.classList.add("active"));
   }
 
   function setTravelActive() {
-    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-wall-link]")
-      .forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".nav-item[data-screen], .mobile-nav-item[data-screen], [data-study-link], [data-activity-link], [data-notes-link], [data-wall-link]").forEach(b => b.classList.remove("active"));
     document.querySelectorAll("[data-travel-link]").forEach(b => b.classList.add("active"));
   }
 
@@ -207,18 +194,10 @@
       const doc = frame.contentDocument;
       if (!doc) return;
       const style = doc.createElement("style");
-      style.textContent = `
-        .wall-topbar,.wall-left{display:none!important}
-        body{background:transparent!important}
-        .wall-layout{width:100%!important;max-width:none!important;margin:0!important;grid-template-columns:minmax(0,1fr) 270px!important;gap:18px!important}
-        .wall-right{position:static!important;top:auto!important}
-        @media(max-width:1050px){.wall-layout{grid-template-columns:1fr!important}.wall-right{display:none!important}}
-      `;
+      style.textContent = `.wall-topbar,.wall-left{display:none!important} body{background:transparent!important} .wall-layout{width:100%!important;max-width:none!important;margin:0!important;grid-template-columns:minmax(0,1fr) 270px!important;gap:18px!important}.wall-right{position:static!important;top:auto!important}@media(max-width:1050px){.wall-layout{grid-template-columns:1fr!important}.wall-right{display:none!important}}`;
       doc.head.appendChild(style);
       loadDateFormatPatch(doc);
-    } catch (e) {
-      console.warn("Wall styling skipped", e);
-    }
+    } catch (e) { console.warn("Wall styling skipped", e); }
   }
 
   function styleEmbeddedTravel(frame) {
@@ -226,74 +205,35 @@
       const doc = frame.contentDocument;
       if (!doc) return;
       const style = doc.createElement("style");
-      style.textContent = `
-        .travel-topbar{display:none!important}
-        .travel-app{width:100%!important;max-width:none!important;padding:0 0 36px!important}
-        body{background:transparent!important}
-      `;
+      style.textContent = `body{background:transparent!important}`;
       doc.head.appendChild(style);
-    } catch (e) {
-      console.warn("Travel styling skipped", e);
-    }
+    } catch (e) { console.warn("Travel styling skipped", e); }
   }
 
   function openWall(event) {
-    event?.preventDefault();
-    setTravelMode(false);
-    setWallActive();
-    const kicker = document.getElementById("topbarKicker");
-    const title = document.getElementById("topbarTitle");
-    const container = document.getElementById("screenContainer");
-    if (kicker) kicker.textContent = "WALL";
-    if (title) title.textContent = "Share progress. Grow together.";
-    if (!container) return;
-    container.innerHTML = `<section class="screen" aria-label="Medora Wall">
-      <iframe id="medoraWallFrame" title="Medora Wall" src="wall.html?embedded=1"
-        style="width:100%;height:calc(100vh - 128px);min-height:650px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
-    </section>`;
-    const frame = document.getElementById("medoraWallFrame");
-    frame?.addEventListener("load", () => styleEmbeddedWall(frame), { once:true });
+    event?.preventDefault(); setTravelMode(false); setWallActive();
+    const kicker = document.getElementById("topbarKicker"), title = document.getElementById("topbarTitle"), container = document.getElementById("screenContainer");
+    if (kicker) kicker.textContent = "WALL"; if (title) title.textContent = "Share progress. Grow together."; if (!container) return;
+    container.innerHTML = `<section class="screen" aria-label="Medora Wall"><iframe id="medoraWallFrame" title="Medora Wall" src="wall.html?embedded=1" style="width:100%;height:calc(100vh - 128px);min-height:650px;border:0;border-radius:22px;background:transparent;display:block;"></iframe></section>`;
+    const frame = document.getElementById("medoraWallFrame"); frame?.addEventListener("load", () => styleEmbeddedWall(frame), { once:true });
   }
 
   function openTravel(event) {
-    event?.preventDefault();
-    setTravelMode(true);
-    setTravelActive();
-    const kicker = document.getElementById("topbarKicker");
-    const title = document.getElementById("topbarTitle");
-    const container = document.getElementById("screenContainer");
-    if (kicker) kicker.textContent = "TRAVEL";
-    if (title) title.textContent = "Your trip, from idea to arrival.";
-    if (!container) return;
-    container.innerHTML = `<section class="screen" aria-label="Medora Travel Planner">
-      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1&v=4.3.0"
-        style="width:100%;height:calc(100vh - 128px);min-height:720px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
-    </section>`;
-    const frame = document.getElementById("medoraTravelFrame");
-    frame?.addEventListener("load", () => styleEmbeddedTravel(frame), { once:true });
+    event?.preventDefault(); setTravelMode(true); setTravelActive();
+    const kicker = document.getElementById("topbarKicker"), title = document.getElementById("topbarTitle"), container = document.getElementById("screenContainer");
+    if (kicker) kicker.textContent = "TRAVEL"; if (title) title.textContent = "Your trip, from idea to arrival."; if (!container) return;
+    container.innerHTML = `<section class="screen" aria-label="Medora Travel Planner"><iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1&v=4.4.0" style="width:100%;height:calc(100vh - 128px);min-height:720px;border:0;border-radius:22px;background:transparent;display:block;"></iframe></section>`;
+    const frame = document.getElementById("medoraTravelFrame"); frame?.addEventListener("load", () => styleEmbeddedTravel(frame), { once:true });
   }
 
   function bind() {
-    addWallButtons();
-    addTravelButtons();
-    reorderNavigation();
-    watchNavigation();
-    loadDateFormatPatch();
-    loadLifeMindSafely();
-
+    addWallButtons(); addTravelButtons(); reorderNavigation(); watchNavigation(); loadDateFormatPatch(); loadLifeMindSafely();
     document.addEventListener("click", event => {
-      const wall = event.target.closest("[data-wall-link]");
-      if (wall) { clearTravelActive(); openWall(event); return; }
-      const travel = event.target.closest("[data-travel-link]");
-      if (travel) { clearWallActive(); openTravel(event); return; }
-      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) {
-        setTravelMode(false);
-        clearWallActive();
-        clearTravelActive();
-      }
+      const wall = event.target.closest("[data-wall-link]"); if (wall) { clearTravelActive(); openWall(event); return; }
+      const travel = event.target.closest("[data-travel-link]"); if (travel) { clearWallActive(); openTravel(event); return; }
+      if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) { setTravelMode(false); clearWallActive(); clearTravelActive(); }
     }, true);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once:true });
-  else bind();
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bind, { once:true }); else bind();
 })();
