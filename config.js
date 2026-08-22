@@ -23,8 +23,8 @@ window.MEDORA_CONFIG = {
   } catch (_) {}
 })();
 
-// Small post-boot helpers. The core app remains independent so an optional
-// enhancement can never prevent authentication or the main Medora UI loading.
+// Small post-boot helpers. Study V2 is intentionally loaded statically in
+// index.html before app.js so it has one deterministic owner and load order.
 (() => {
   const load = (attr, src) => {
     if (document.querySelector(`script[${attr}]`)) return;
@@ -47,7 +47,6 @@ window.MEDORA_CONFIG = {
     load('data-medora-plan-card-links-v2', 'plan-card-accordion-links-v2.js?v=2.0.0');
     load('data-medora-plan-update-reflection-v3', 'plan-update-reflection-v3.js?v=3.0.0');
     load('data-medora-hobby-cards', 'hobby-cards.js?v=1.0.0');
-    load('data-medora-study-v2', 'study-v2.js?v=2.0.0');
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
   else bootEnhancements();
