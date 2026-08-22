@@ -64,6 +64,7 @@
       document.head.appendChild(link);
     }
 
+    // Study is intentionally absent here. study-v2.js is the single Study owner.
     const scripts = [
       ["data-life-mind-script", "planner-brain.js?v=2.0.0"],
       ["data-life-mind-card-enhancement", "planner-card-enhancement.js?v=1.0.0"],
@@ -75,9 +76,6 @@
       ["data-planner-checkin-indications", "planner-checkin-indications.js?v=1.0.0"],
       ["data-plan-goal-progress", "plan-goal-progress-enhancement.js?v=1.0.0"],
       ["data-activity-tracker", "activity-tracker.js?v=1.0.0"],
-      ["data-study-hub", "study-hub.js?v=1.0.0"],
-      ["data-study-hub-pro", "study-hub-pro.js?v=1.0.0"],
-      ["data-study-hub-insights-plus", "study-hub-insights-plus.js?v=1.0.0"],
       ["data-note-hub", "note-hub.js?v=1.0.0"]
     ];
 
@@ -157,9 +155,7 @@
   }
 
   function revealNavigation(force = false) {
-    if (force || mainNavComplete()) {
-      document.documentElement.classList.add("medora-nav-ready");
-    }
+    if (force || mainNavComplete()) document.documentElement.classList.add("medora-nav-ready");
   }
 
   function reorderNavigation() {
@@ -183,11 +179,7 @@
     if (mobileNav) observer.observe(mobileNav, { childList: true });
 
     [0, 50, 100, 180, 300, 500, 800, 1200].forEach(ms => setTimeout(reorderNavigation, ms));
-
-    setTimeout(() => {
-      reorderNavigation();
-      revealNavigation(true);
-    }, 1800);
+    setTimeout(() => { reorderNavigation(); revealNavigation(true); }, 1800);
   }
 
   function clearWallActive() {
