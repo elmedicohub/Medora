@@ -6,6 +6,38 @@ window.MEDORA_CONFIG = {
   SUPABASE_PUBLISHABLE_KEY: "sb_publishable__ZwYly94tS9hVEXs9pjSxA_6mDYRWhl"
 };
 
+// Compatibility guard for an older Study observer option. This runs before the
+// Study hierarchy script so the final Study UI can initialize instead of
+// stopping at the loading state.
+(() => {
+  if (window.__MEDORA_MUTATION_OBSERVER_COMPAT__) return;
+  window.__MEDORA_MUTATION_OBSERVER_COMPAT__ = true;
+  const nativeObserve = MutationObserver.prototype.observe;
+  MutationObserver.prototype.observe = function(target, options) {
+    if (options && Object.prototype.hasOwnProperty.call(options, 'classList')) {
+      const fixed = { ...options };
+      delete fixed.classList;
+      fixed.attributes = true;
+      fixed.attributeFilter = Array.from(new Set([...(fixed.attributeFilter || []), 'class']));
+      return nativeObserve.call(this, target, fixed);
+    }
+    return nativeObserve.call(this, target, options);
+  };
+})();
+
+// Make Study navigation state immediate, even while Study modules initialize.
+(() => {
+  const setStudyTopbar = () => {
+    const kicker = document.getElementById('topbarKicker');
+    const title = document.getElementById('topbarTitle');
+    if (kicker) kicker.textContent = 'STUDY';
+    if (title) title.textContent = 'Learn together. Finish stronger.';
+  };
+  document.addEventListener('click', event => {
+    if (event.target.closest('[data-study-link]')) setStudyTopbar();
+  }, true);
+})();
+
 // Study boot guard: never paint the legacy Study screen before the final
 // simplified hierarchy/collaboration layer is ready. If an enhancement fails,
 // fall back to the core Study UI after a few seconds so Study remains usable.
@@ -110,7 +142,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-plan-update-reflection-v3', 'plan-update-reflection-v3.js?v=3.0.0');
     load('data-medora-hobby-cards', 'hobby-cards.js?v=1.0.0');
     load('data-medora-study-simple-ui', 'study-simple-ui.js?v=1.0.0');
-    load('data-medora-study-hierarchy-collab', 'study-hierarchy-collab.js?v=1.0.0');
+    load('data-medora-study-hierarchy-collab', 'study-hierarchy-collab.js?v=1.0.1');
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
   else bootEnhancements();
