@@ -29,12 +29,18 @@
       .main-nav,.mobile-nav{visibility:hidden!important}
       html.medora-nav-ready .main-nav,
       html.medora-nav-ready .mobile-nav{visibility:visible!important}
+      html.medora-travel-open #mbFloat,
+      html.medora-travel-open .mb-float{display:none!important}
       @media(max-width:820px){.mobile-nav.medora-travel-enabled{grid-template-columns:repeat(7,1fr)!important}}
     `;
     document.head.appendChild(style);
   }
 
   installNavBootStyle();
+
+  function setTravelMode(active) {
+    document.documentElement.classList.toggle("medora-travel-open", !!active);
+  }
 
   function loadDateFormatPatch(doc = document) {
     try {
@@ -241,6 +247,7 @@
 
   function openWall(event) {
     event?.preventDefault();
+    setTravelMode(false);
     setWallActive();
     const kicker = document.getElementById("topbarKicker");
     const title = document.getElementById("topbarTitle");
@@ -258,6 +265,7 @@
 
   function openTravel(event) {
     event?.preventDefault();
+    setTravelMode(true);
     setTravelActive();
     const kicker = document.getElementById("topbarKicker");
     const title = document.getElementById("topbarTitle");
@@ -266,7 +274,7 @@
     if (title) title.textContent = "Your trip, from idea to arrival.";
     if (!container) return;
     container.innerHTML = `<section class="screen" aria-label="Medora Travel Planner">
-      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1"
+      <iframe id="medoraTravelFrame" title="Medora Travel Planner" src="travel.html?embedded=1&v=2.1.0"
         style="width:100%;height:calc(100vh - 128px);min-height:720px;border:0;border-radius:22px;background:transparent;display:block;"></iframe>
     </section>`;
     const frame = document.getElementById("medoraTravelFrame");
@@ -287,6 +295,7 @@
       const travel = event.target.closest("[data-travel-link]");
       if (travel) { clearWallActive(); openTravel(event); return; }
       if (event.target.closest("[data-screen]") || event.target.closest("[data-study-link]") || event.target.closest("[data-activity-link]") || event.target.closest("[data-notes-link]") || event.target.closest("#avatarButton")) {
+        setTravelMode(false);
         clearWallActive();
         clearTravelActive();
       }
