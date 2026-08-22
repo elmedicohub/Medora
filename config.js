@@ -23,6 +23,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-progress-intelligence', 'progress-intelligence.js?v=1.0.0');
     load('data-medora-ambient-audio', 'ambient-audio.js?v=1.2.0');
     load('data-medora-planner-edit', 'planner-edit-enhancement.js?v=1.0.0');
+    load('data-medora-sticky-topbar', 'sticky-topbar.js?v=1.0.0');
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
   else bootEnhancements();
