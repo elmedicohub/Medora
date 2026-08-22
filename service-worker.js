@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-v2-travel-form-v55";
+const CACHE = "medora-study-v2-travel-builder-v56";
 
 self.addEventListener("install", () => self.skipWaiting());
 
