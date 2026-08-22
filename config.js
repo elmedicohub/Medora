@@ -46,6 +46,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-plan-accountability-v2', 'plan-accountability-v2.js?v=2.0.0');
     load('data-medora-prepared-plans', 'prepared-plans-enhancement.js?v=1.0.0');
     load('data-medora-planner-indefinite', 'planner-indefinite.js?v=1.0.0');
+    load('data-medora-planner-tab-focus', 'planner-tab-focus.js?v=1.0.0');
     load('data-medora-plan-card-links-v2', 'plan-card-accordion-links-v2.js?v=2.0.0');
     load('data-medora-plan-update-reflection-v3', 'plan-update-reflection-v3.js?v=3.0.0');
     load('data-medora-hobby-cards', 'hobby-cards.js?v=1.0.0');
