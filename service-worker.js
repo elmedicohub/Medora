@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-quran-revision-journal-v2-v52";
+const CACHE = "medora-prayer-timeline-details-v53";
 
 self.addEventListener("install", () => self.skipWaiting());
 
