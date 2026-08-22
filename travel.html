@@ -80,7 +80,7 @@
     <form id="newTripForm" method="dialog">
       <div class="dialog-head">
         <div><span class="eyebrow">NEW TRIP</span><h2>Create a trip</h2></div>
-        <button class="icon-close" value="cancel" aria-label="Close">×</button>
+        <button class="icon-close" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button>
       </div>
       <label><span>Trip name</span><input id="newTripTitle" required maxlength="120" placeholder="e.g. Spain 2027" /></label>
       <div class="two-col">
@@ -96,7 +96,7 @@
     <form id="itineraryForm" method="dialog">
       <div class="dialog-head">
         <div><span class="eyebrow">DAY PLAN</span><h2>Add to itinerary</h2></div>
-        <button class="icon-close" value="cancel" aria-label="Close">×</button>
+        <button class="icon-close" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button>
       </div>
       <input id="itineraryPlaceId" type="hidden" />
       <label><span>Title</span><input id="itineraryTitle" required maxlength="160" /></label>
@@ -114,7 +114,7 @@
     <form id="bookingForm" method="dialog">
       <div class="dialog-head">
         <div><span class="eyebrow">BOOKING / COST</span><h2>Add booking</h2></div>
-        <button class="icon-close" value="cancel" aria-label="Close">×</button>
+        <button class="icon-close" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button>
       </div>
       <div class="two-col">
         <label><span>Type</span><select id="bookingType"><option value="flight">Flight</option><option value="train">Train</option><option value="bus">Bus</option><option value="accommodation">Accommodation</option><option value="attraction">Attraction</option><option value="restaurant">Restaurant</option><option value="transfer">Transfer</option><option value="other">Other</option></select></label>
