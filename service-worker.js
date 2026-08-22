@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-v2-travel-photo-drop-v57";
+const CACHE = "medora-study-v2-travel-smart-entities-v46";
 
 self.addEventListener("install", () => self.skipWaiting());
 
