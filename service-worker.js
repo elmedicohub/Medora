@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-prayer-quality-v1-v47";
+const CACHE = "medora-prepared-prayer-plan-v48";
 
 self.addEventListener("install", () => self.skipWaiting());
 
