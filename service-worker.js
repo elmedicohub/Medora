@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-ambient-audio-v32";
+const CACHE = "medora-soft-keys-continuous-v33";
 
 self.addEventListener("install", () => self.skipWaiting());
 
