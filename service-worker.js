@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-hobby-cards-v43";
+const CACHE = "medora-auth-premium-v44";
 
 self.addEventListener("install", () => self.skipWaiting());
 
