@@ -26,7 +26,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-sticky-topbar', 'sticky-topbar.js?v=1.0.0');
     load('data-medora-goal-card-accordion', 'goal-card-accordion.js?v=1.0.0');
     load('data-medora-plan-accountability', 'plan-accountability.js?v=1.0.0');
-    load('data-medora-plan-card-links', 'plan-card-accordion-links.js?v=1.0.0');
+    load('data-medora-plan-card-links-v2', 'plan-card-accordion-links-v2.js?v=2.0.0');
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootEnhancements, { once: true });
   else bootEnhancements();
