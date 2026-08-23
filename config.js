@@ -23,9 +23,9 @@ window.MEDORA_CONFIG = {
   } catch (_) {}
 })();
 
-// Small post-boot helpers. Study V2 and its custom date-plan extension are
-// intentionally loaded statically in index.html before app.js so Study has a
-// deterministic owner and load order.
+// Small post-boot helpers. Study V2 is loaded statically in index.html. The
+// deterministic custom-date planner V2 mounts independently and immediately
+// whenever the Study V2 root appears.
 (() => {
   const load = (attr, src) => {
     if (document.querySelector(`script[${attr}]`)) return;
@@ -50,6 +50,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-planner-tab-focus', 'planner-tab-focus.js?v=1.0.0');
     load('data-medora-quran-revision-journal-v2', 'quran-revision-journal-v2.js?v=2.0.0');
     load('data-medora-prayer-timeline-details', 'prayer-timeline-details.js?v=1.0.0');
+    load('data-medora-study-custom-date-plans-v2', 'study-custom-date-plans-v2.js?v=2.0.0');
     load('data-medora-plan-card-links-v2', 'plan-card-accordion-links-v2.js?v=2.0.0');
     load('data-medora-plan-update-reflection-v3', 'plan-update-reflection-v3.js?v=3.0.0');
     load('data-medora-hobby-cards', 'hobby-cards.js?v=1.0.0');
