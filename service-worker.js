@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-recovery-v62";
+const CACHE = "medora-study-calendar-freeze-fix-v63";
 
 self.addEventListener("install", () => self.skipWaiting());
 
