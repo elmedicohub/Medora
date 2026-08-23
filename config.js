@@ -6,23 +6,6 @@ window.MEDORA_CONFIG = {
   SUPABASE_PUBLISHABLE_KEY: "sb_publishable__ZwYly94tS9hVEXs9pjSxA_6mDYRWhl"
 };
 
-// If the user refreshed while on Study, keep the default My Day render hidden
-// until the single Study V2 owner restores the Study screen. This avoids a
-// homepage flash without showing a fake loading page.
-(() => {
-  try {
-    if (localStorage.getItem('medora.lastScreen') !== 'study') return;
-    document.documentElement.classList.add('medora-restore-study');
-    const style = document.createElement('style');
-    style.id = 'medoraStudyRestoreStyle';
-    style.textContent = `
-      html.medora-restore-study #screenContainer,
-      html.medora-restore-study .topbar > div:first-child { visibility:hidden!important; }
-    `;
-    document.head.appendChild(style);
-  } catch (_) {}
-})();
-
 // Small post-boot helpers. Study V2 and the stable custom Study planner chain
 // are loaded statically from index.html/study-custom-date-plans.js.
 (() => {
