@@ -6,7 +6,7 @@
   const files = [
     ['study-custom-date-plans-v3.js?v=3.1.0', '__MEDORA_STUDY_CUSTOM_DATE_PLANS_V3__'],
     ['study-day-notes.js?v=1.1.0', '__MEDORA_STUDY_DAY_NOTES__'],
-    ['study-plan-calendar.js?v=1.0.0', '__MEDORA_STUDY_PLAN_CALENDAR__'],
+    ['study-plan-calendar.js?v=1.1.0', '__MEDORA_STUDY_PLAN_CALENDAR__'],
     ['escape-close.js?v=1.0.0', '__MEDORA_ESCAPE_CLOSE__']
   ];
 
