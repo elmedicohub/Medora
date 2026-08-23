@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-calendar-freeze-fix-v63";
+const CACHE = "medora-study-calendar-freeze-fix-v64";
 
 self.addEventListener("install", () => self.skipWaiting());
 
@@ -17,7 +17,7 @@ self.addEventListener("fetch", event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(event.request).then(response => {
+    fetch(event.request, { cache: "no-store" }).then(response => {
       const copy = response.clone();
       caches.open(CACHE).then(cache => cache.put(event.request, copy));
       return response;
