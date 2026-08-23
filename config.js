@@ -51,6 +51,7 @@ window.MEDORA_CONFIG = {
     load('data-medora-quran-revision-journal-v2', 'quran-revision-journal-v2.js?v=2.0.0');
     load('data-medora-prayer-timeline-details', 'prayer-timeline-details.js?v=1.0.0');
     load('data-medora-study-custom-date-plans-v2', 'study-custom-date-plans-v2.js?v=2.0.0');
+    load('data-medora-study-day-notes', 'study-day-notes.js?v=1.0.0');
     load('data-medora-plan-card-links-v2', 'plan-card-accordion-links-v2.js?v=2.0.0');
     load('data-medora-plan-update-reflection-v3', 'plan-update-reflection-v3.js?v=3.0.0');
     load('data-medora-hobby-cards', 'hobby-cards.js?v=1.0.0');
