@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-day-notes-v58";
+const CACHE = "medora-study-calendar-escape-v59";
 
 self.addEventListener("install", () => self.skipWaiting());
 
