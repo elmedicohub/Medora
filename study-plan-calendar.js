@@ -72,7 +72,7 @@
   function ensure(){
     const section=$('#scp3Section'); if(!section)return false;
     addStyles();
-    let header=$('.ms2-section-head',section);
+    const header=$('.ms2-section-head',section);
     if(header&&!$('.spc-headrow',section)){
       const wrap=document.createElement('div');wrap.className='spc-headrow';
       const text=document.createElement('div');
@@ -85,7 +85,16 @@
       section.appendChild(cal);
     }
     const list=$('#scp3List',section);
-    if(list!==state.list){state.list=list;if(state.observer)state.observer.disconnect();if(list){state.observer=new MutationObserver(()=>{if(state.mode==='calendar')renderCalendar()});state.observer.observe(list,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});}}
+    if(list!==state.list){
+      state.list=list;
+      if(state.observer)state.observer.disconnect();
+      if(list){
+        state.observer=new MutationObserver(()=>{
+          if(state.mode==='calendar') requestAnimationFrame(renderCalendar);
+        });
+        state.observer.observe(list,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+      }
+    }
     applyMode();
     return true;
   }
@@ -126,9 +135,14 @@
     const item=e.target.closest('[data-spc-plan]');if(item){
       state.mode='normal';localStorage.setItem('medora.studyPlanView','normal');applyMode();
       const card=document.querySelector(`#scp3Section .scp3-card[data-plan="${CSS.escape(item.dataset.spcPlan)}"]`);if(card){card.classList.add('open');setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'center'}),30)}
+      return;
     }
+    if(e.target.closest('[data-study-link],[data-screen="study"]')) setTimeout(ensure,80);
   },true);
 
-  const screen=$('#screenContainer');if(screen)new MutationObserver(()=>ensure()).observe(screen,{childList:true,subtree:true});
+  // IMPORTANT: observe only direct screen replacements. Observing the whole Study subtree
+  // caused Calendar mode to observe its own grid rewrite and loop forever.
+  const screen=$('#screenContainer');
+  if(screen)new MutationObserver(()=>setTimeout(ensure,0)).observe(screen,{childList:true});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(ensure,80),{once:true});else setTimeout(ensure,80);
 })();
