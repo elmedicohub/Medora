@@ -111,12 +111,12 @@ window.MEDORA_CONFIG = {
     if (!body) return;
     const observer = new MutationObserver(tick);
     observer.observe(body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-    // Keep a lightweight fallback pulse during startup for async auth/data races.
+    // Keep a lightweight fallback pulse only during startup; the observer handles later changes.
     let n = 0;
     const timer = setInterval(() => {
       tick();
       n += 1;
-      if (n >= 60 && !wantsStudy()) clearInterval(timer);
+      if (n >= 60) clearInterval(timer);
     }, 150);
   };
 
