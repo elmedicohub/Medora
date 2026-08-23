@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "medora-";
-const CACHE = "medora-study-calendar-escape-v59";
+const CACHE = "medora-study-refresh-v60";
 
 self.addEventListener("install", () => self.skipWaiting());
 
