@@ -1,83 +1,10 @@
 (() => {
   "use strict";
-  if (window.__MEDORA_STUDY_CUSTOM_DATE_PLANS_V2__) return;
-  window.__MEDORA_STUDY_CUSTOM_DATE_PLANS_V2__ = true;
-
-  const cfg = window.MEDORA_CONFIG || {};
-  if (!window.supabase?.createClient || !cfg.SUPABASE_URL || !cfg.SUPABASE_PUBLISHABLE_KEY) return;
-  const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_PUBLISHABLE_KEY, {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
-  const esc=(v="")=>String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const pad=n=>String(n).padStart(2,"0");
-  const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-  const dmy=s=>{const m=String(s||"").match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${m[3]}/${m[2]}/${m[1]}`:""};
-  const parseDMY=s=>{const m=String(s||"").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);if(!m)return null;const x=new Date(+m[3],+m[2]-1,+m[1]);return x.getFullYear()===+m[3]&&x.getMonth()===+m[2]-1&&x.getDate()===+m[1]?x:null};
-  const mask=v=>{const x=String(v||"").replace(/\D/g,"").slice(0,8);return x.length<=2?x:x.length<=4?`${x.slice(0,2)}/${x.slice(2)}`:`${x.slice(0,2)}/${x.slice(2,4)}/${x.slice(4)}`};
-  const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
-  const S={user:null,plans:[],days:[],loading:false};
-
-  function css(){if($('#scp2Style'))return;const s=document.createElement('style');s.id='scp2Style';s.textContent=`
-    .scp2-button{min-height:43px;padding:0 15px;border:1px solid #dce4ee;border-radius:11px;background:#fff;color:#4f5d73;font-size:10px;font-weight:900;cursor:pointer}.scp2-button:hover{background:#f7f9fd;border-color:#cbd5ee}.scp2-button b{color:#6376df}
-    .scp2-section{margin-top:0}.scp2-list{display:grid;gap:8px;margin-top:12px}.scp2-loading,.scp2-empty{padding:18px;border:1px dashed #dde4ed;border-radius:13px;color:#8b94a3;text-align:center;font-size:9px}
-    .scp2-card{border:1px solid #e2e7ef;border-radius:14px;background:#fbfcfe;overflow:hidden}.scp2-head{width:100%;padding:12px 13px;border:0;background:transparent;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;text-align:left;cursor:pointer}.scp2-head strong,.scp2-head small{display:block}.scp2-head small{margin-top:3px;color:#8992a2;font-size:8px}.scp2-pill{padding:5px 8px;border-radius:999px;background:#eef1ff;color:#5b6fd5;font-size:8px;font-weight:900}.scp2-body{display:none;padding:0 13px 13px}.scp2-card.open .scp2-body{display:block}.scp2-progress{height:5px;background:#e9edf3;border-radius:999px;overflow:hidden;margin-bottom:9px}.scp2-progress span{display:block;height:100%;background:linear-gradient(90deg,#1bb7aa,#667ff0,#8659e8)}.scp2-days{display:grid;gap:6px}.scp2-day{display:grid;grid-template-columns:90px 24px 1fr 60px;gap:8px;align-items:center;padding:8px 9px;border:1px solid #e8ecf2;border-radius:10px;background:#fff}.scp2-day.rest{background:#fafbfc}.scp2-date{font-size:8px;font-weight:900;color:#68758a}.scp2-day strong,.scp2-day small{display:block}.scp2-day strong{font-size:9px}.scp2-day small{margin-top:2px;color:#8a93a2;font-size:8px}.scp2-check{width:22px;height:22px;border:1px solid #ced6e2;border-radius:7px;background:#fff;color:transparent;cursor:pointer}.scp2-check.done{background:#20a981;border-color:#20a981;color:#fff}.scp2-actions{display:flex;gap:7px;margin-top:10px}.scp2-actions button{min-height:34px;padding:0 10px;border:0;border-radius:9px;background:#eef1f6;color:#536076;font-size:8px;font-weight:900;cursor:pointer}.scp2-actions .danger{background:#fff0f2;color:#b6485c}
-    .scp2-bg{position:fixed;z-index:1100;inset:0;display:grid;place-items:center;padding:16px;background:#0b142994;backdrop-filter:blur(6px)}.scp2-modal{width:min(980px,100%);max-height:94vh;overflow:auto;border-radius:22px;background:#fff;box-shadow:0 32px 110px #0a143250}.scp2-modal-head{display:flex;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid #edf0f5}.scp2-modal-head h2{margin:4px 0 2px;font-size:23px}.scp2-modal-head p{margin:0;color:#8490a1;font-size:9px}.scp2-x{width:37px;height:37px;border:0;border-radius:50%;background:#eff2f6;font-size:20px;cursor:pointer}.scp2-form{padding:18px 20px}.scp2-top{display:grid;grid-template-columns:1.4fr .8fr .8fr auto;gap:9px;align-items:end}.scp2-field{display:grid;gap:5px}.scp2-field span{font-size:9px;font-weight:850;color:#5f6b7f}.scp2-field input{min-height:43px;padding:0 11px;border:1px solid #dce3ed;border-radius:11px;font:inherit;color:#29364a;outline:none}.scp2-generate{min-height:43px;padding:0 13px;border:0;border-radius:11px;background:#eef1ff;color:#5d70d7;font-size:9px;font-weight:900;cursor:pointer}.scp2-rows{display:grid;gap:7px;margin-top:16px}.scp2-row{display:grid;grid-template-columns:102px minmax(180px,1fr) 108px minmax(140px,.7fr) auto;gap:7px;align-items:center;padding:8px;border:1px solid #e6ebf1;border-radius:12px;background:#fbfcfe}.scp2-row input[type=text],.scp2-row input[type=time]{width:100%;min-height:38px;padding:0 9px;border:1px solid #dfe5ed;border-radius:9px;background:#fff;font:inherit;font-size:9px;box-sizing:border-box}.scp2-rest{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:850;color:#778296;white-space:nowrap}.scp2-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.scp2-foot button{min-height:41px;padding:0 14px;border:0;border-radius:10px;font-size:9px;font-weight:900;cursor:pointer}.scp2-cancel{background:#eff2f6;color:#566176}.scp2-save{background:linear-gradient(115deg,#18b6aa,#657ff1 55%,#8659e9);color:#fff}
-    @media(max-width:760px){.scp2-top{grid-template-columns:1fr 1fr}.scp2-top .scp2-field:first-child{grid-column:1/-1}.scp2-generate{grid-column:1/-1}.scp2-row{grid-template-columns:86px 1fr 86px}.scp2-row .note,.scp2-rest{grid-column:2/-1}.scp2-day{grid-template-columns:76px 24px 1fr}.scp2-day>.scp2-date:last-child{grid-column:3}}
-    @media(max-width:520px){.scp2-bg{padding:0;align-items:end}.scp2-modal{width:100%;max-height:95vh;border-radius:22px 22px 0 0}.scp2-form,.scp2-modal-head{padding-left:14px;padding-right:14px}.scp2-top,.scp2-row{grid-template-columns:1fr}.scp2-top .scp2-field:first-child,.scp2-generate,.scp2-row .note,.scp2-rest{grid-column:auto}.scp2-day{grid-template-columns:72px 22px 1fr}}
-  `;document.head.appendChild(s)}
-
-  function studyRoot(){return $('#medoraStudyV2')}
-  function currentPath(){return{field:$('#ms2Field')?.value||'',specialty:$('#ms2Specialty')?.value||'',topic:$('#ms2Subtopic')?.value||$('#ms2Custom')?.value?.trim()||$('#ms2Topic')?.value||''}}
-  function planDays(id){return S.days.filter(x=>x.plan_id===id).sort((a,b)=>a.study_date.localeCompare(b.study_date))}
-
-  function mount(){
-    const root=studyRoot();if(!root)return false;css();
-    const actions=$('.ms2-actions',root);
-    if(actions&&!$('#scp2New')){const b=document.createElement('button');b.id='scp2New';b.type='button';b.className='scp2-button';b.innerHTML='<b>＋</b> Custom date plan';b.onclick=()=>openEditor();const note=$('.ms2-note',actions);actions.insertBefore(b,note||null)}
-    if(!$('#scp2Section')){const shared=[...root.children].find(x=>/Your shared plans/i.test(x.textContent||''));const sec=document.createElement('section');sec.id='scp2Section';sec.className='ms2-card scp2-section';sec.innerHTML='<div class="ms2-section-head"><h2>Your date-by-date plans</h2><p>Choose exact dates and decide what topic belongs to each day.</p></div><div id="scp2List" class="scp2-loading">Loading your plans…</div>';if(shared)shared.before(sec);else root.appendChild(sec)}
-    render();loadData();return true;
-  }
-
-  async function authUser(){if(S.user)return S.user;const {data:{user}}=await db.auth.getUser();S.user=user||null;return S.user}
-  async function loadData(){if(S.loading)return;const u=await authUser();if(!u){const h=$('#scp2List');if(h)h.innerHTML='<div class="scp2-empty">Sign in to use custom Study plans.</div>';return}S.loading=true;try{const [p,d]=await Promise.all([db.from('study_custom_plans').select('*').eq('user_id',u.id).neq('status','archived').order('start_date'),db.from('study_custom_plan_days').select('*').eq('user_id',u.id).order('study_date')]);if(p.error)throw p.error;if(d.error)throw d.error;S.plans=p.data||[];S.days=d.data||[];render()}catch(e){console.warn('Custom Study plans',e);const h=$('#scp2List');if(h)h.innerHTML='<div class="scp2-empty">Could not load custom plans. The Study page itself is still available.</div>'}finally{S.loading=false}}
-
-  function render(){const h=$('#scp2List');if(!h)return;if(!S.user&&!S.plans.length){h.className='scp2-loading';h.textContent='Loading your plans…';return}h.className='';if(!S.plans.length){h.innerHTML='<div class="scp2-empty">No date-by-date plan yet. Tap <b>Custom date plan</b> above.</div>';return}h.innerHTML=`<div class="scp2-list">${S.plans.map(p=>{const rows=planDays(p.id).filter(x=>!x.is_rest_day&&x.topic),done=rows.filter(x=>x.is_done).length,pct=rows.length?Math.round(done/rows.length*100):0;return`<article class="scp2-card"><button class="scp2-head" type="button"><span><strong>${esc(p.title)}</strong><small>${dmy(p.start_date)} → ${dmy(p.end_date)}${p.specialty?` · ${esc(p.specialty)}`:''}</small></span><span class="scp2-pill">${done}/${rows.length} done</span></button><div class="scp2-body"><div class="scp2-progress"><span style="width:${pct}%"></span></div><div class="scp2-days">${planDays(p.id).map(d=>`<div class="scp2-day ${d.is_rest_day?'rest':''}"><span class="scp2-date">${dmy(d.study_date)}</span><button class="scp2-check ${d.is_done?'done':''}" type="button" data-done="${d.id}" ${d.is_rest_day?'disabled':''}>✓</button><span><strong>${d.is_rest_day?'Rest / catch-up':esc(d.topic||'Topic not set')}</strong>${d.notes?`<small>${esc(d.notes)}</small>`:''}</span><span class="scp2-date">${d.study_time?String(d.study_time).slice(0,5):''}</span></div>`).join('')}</div><div class="scp2-actions"><button type="button" data-edit="${p.id}">Edit plan</button><button type="button" class="danger" data-delete="${p.id}">Delete</button></div></div></article>`}).join('')}</div>`;
-    $$('.scp2-head',h).forEach(b=>b.onclick=()=>b.closest('.scp2-card').classList.toggle('open'));
-    $$('[data-edit]',h).forEach(b=>b.onclick=e=>{e.stopPropagation();openEditor(b.dataset.edit)});
-    $$('[data-delete]',h).forEach(b=>b.onclick=e=>{e.stopPropagation();removePlan(b.dataset.delete)});
-    $$('[data-done]',h).forEach(b=>b.onclick=e=>{e.stopPropagation();toggleDone(b.dataset.done)});
-  }
-
-  function rowsBetween(a,b,existing=[],seed=''){const out=[];for(let d=new Date(a),g=0;d<=b&&g<120;d=addDays(d,1),g++){const date=iso(d),old=existing.find(x=>x.study_date===date);out.push({study_date:date,topic:old?.topic||(g===0?seed:''),study_time:old?.study_time?String(old.study_time).slice(0,5):'',notes:old?.notes||'',is_rest_day:!!old?.is_rest_day,is_done:!!old?.is_done})}return out}
-  function defaultRange(){const a=new Date(),b=addDays(a,6);return[a,b]}
-
-  function openEditor(id=null){
-    const p=id?S.plans.find(x=>x.id===id):null,path=currentPath(),old=p?planDays(p.id):[],def=defaultRange(),from=p?dmy(p.start_date):dmy(iso(def[0])),to=p?dmy(p.end_date):dmy(iso(def[1]));
-    const bg=document.createElement('div');bg.className='scp2-bg';bg.id='scp2Modal';bg.innerHTML=`<section class="scp2-modal"><div class="scp2-modal-head"><div><span class="ms2-ey">CUSTOM STUDY PLAN</span><h2>${p?'Edit':'Build'} date-by-date plan</h2><p>Choose your range, then write the exact topic for every day.</p></div><button class="scp2-x" type="button">×</button></div><div class="scp2-form"><div class="scp2-top"><label class="scp2-field"><span>Plan name</span><input id="scp2Title" maxlength="160" value="${esc(p?.title||((path.specialty||'Study')+' plan'))}"></label><label class="scp2-field"><span>From</span><input id="scp2From" inputmode="numeric" maxlength="10" value="${from}"></label><label class="scp2-field"><span>To</span><input id="scp2To" inputmode="numeric" maxlength="10" value="${to}"></label><button id="scp2Generate" class="scp2-generate" type="button">Generate days</button></div><div id="scp2Rows" class="scp2-rows"></div><div class="scp2-foot"><button class="scp2-cancel" type="button">Cancel</button><button id="scp2Save" class="scp2-save" type="button">Save plan</button></div></div></section>`;document.body.appendChild(bg);
-    ['scp2From','scp2To'].forEach(k=>$(`#${k}`,bg).oninput=e=>e.target.value=mask(e.target.value));
-    $('.scp2-x',bg).onclick=$('.scp2-cancel',bg).onclick=()=>bg.remove();bg.onclick=e=>{if(e.target===bg)bg.remove()};
-    const renderRows=rows=>{$('#scp2Rows',bg).innerHTML=rows.map(r=>`<div class="scp2-row" data-date="${r.study_date}" data-old-done="${r.is_done?'1':'0'}"><span class="scp2-date">${dmy(r.study_date)}</span><input class="topic" type="text" maxlength="220" placeholder="Topic for this day" value="${esc(r.topic)}"><input class="time" type="time" value="${esc(r.study_time)}"><input class="note" type="text" maxlength="500" placeholder="Optional note" value="${esc(r.notes)}"><label class="scp2-rest"><input class="rest" type="checkbox" ${r.is_rest_day?'checked':''}> Rest</label></div>`).join('')};
-    renderRows(rowsBetween(parseDMY(from),parseDMY(to),old,p?'':path.topic));
-    $('#scp2Generate',bg).onclick=()=>{const a=parseDMY($('#scp2From',bg).value),b=parseDMY($('#scp2To',bg).value);if(!a||!b||b<a)return alert('Enter valid dates as DD/MM/YYYY.');const n=Math.floor((b-a)/86400000)+1;if(n>120)return alert('Please keep a custom plan to 120 days or less.');renderRows(rowsBetween(a,b,collect(bg),path.topic))};
-    $('#scp2Save',bg).onclick=()=>save(bg,p,path);
-  }
-
-  function collect(bg){return $$('.scp2-row',bg).map(r=>({study_date:r.dataset.date,topic:$('.topic',r).value.trim(),study_time:$('.time',r).value||null,notes:$('.note',r).value.trim()||null,is_rest_day:$('.rest',r).checked,is_done:r.dataset.oldDone==='1'}))}
-
-  async function save(bg,p,path){
-    const u=await authUser();if(!u)return alert('Please sign in again.');const title=$('#scp2Title',bg).value.trim(),a=parseDMY($('#scp2From',bg).value),b=parseDMY($('#scp2To',bg).value),rows=collect(bg);if(!title)return alert('Give the plan a name.');if(!a||!b||b<a)return alert('Enter valid dates as DD/MM/YYYY.');const missing=rows.find(x=>!x.is_rest_day&&!x.topic);if(missing)return alert(`Add a topic for ${dmy(missing.study_date)} or mark it Rest.`);const btn=$('#scp2Save',bg);btn.disabled=true;btn.textContent='Saving…';try{
-      let plan=p;if(p){const r=await db.from('study_custom_plans').update({title,field:path.field||p.field||null,specialty:path.specialty||p.specialty||null,start_date:iso(a),end_date:iso(b),updated_at:new Date().toISOString()}).eq('id',p.id).eq('user_id',u.id).select().single();if(r.error)throw r.error;plan=r.data}else{const r=await db.from('study_custom_plans').insert({user_id:u.id,title,field:path.field||null,specialty:path.specialty||null,start_date:iso(a),end_date:iso(b)}).select().single();if(r.error)throw r.error;plan=r.data}
-      const existing=planDays(plan.id),keep=new Set(rows.map(x=>x.study_date)),remove=existing.filter(x=>!keep.has(x.study_date)).map(x=>x.id);if(remove.length){const r=await db.from('study_custom_plan_days').delete().in('id',remove).eq('user_id',u.id);if(r.error)throw r.error}
-      const payload=rows.map(x=>({plan_id:plan.id,user_id:u.id,study_date:x.study_date,topic:x.topic,study_time:x.study_time,notes:x.notes,is_rest_day:x.is_rest_day,is_done:x.is_done,updated_at:new Date().toISOString()}));if(payload.length){const r=await db.from('study_custom_plan_days').upsert(payload,{onConflict:'plan_id,study_date'});if(r.error)throw r.error}
-      bg.remove();await loadData();
-    }catch(e){console.warn(e);alert(e.message||'Could not save this Study plan.')}finally{btn.disabled=false;btn.textContent='Save plan'}
-  }
-
-  async function toggleDone(id){const u=await authUser(),row=S.days.find(x=>x.id===id);if(!u||!row)return;const v=!row.is_done,{error}=await db.from('study_custom_plan_days').update({is_done:v,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',u.id);if(error)return alert(error.message);row.is_done=v;render()}
-  async function removePlan(id){const u=await authUser();if(!u||!confirm('Delete this custom Study plan?'))return;const {error}=await db.from('study_custom_plans').delete().eq('id',id).eq('user_id',u.id);if(error)return alert(error.message);S.plans=S.plans.filter(x=>x.id!==id);S.days=S.days.filter(x=>x.plan_id!==id);render()}
-
-  let mountTimer=null;
-  const tryMount=()=>{clearTimeout(mountTimer);mountTimer=setTimeout(()=>mount(),20)};
-  new MutationObserver(tryMount).observe(document.body,{childList:true,subtree:true});
-  document.addEventListener('click',e=>{if(e.target.closest('[data-study-link],[data-screen="study"]'))setTimeout(tryMount,30)},true);
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tryMount,{once:true});else tryMount();
+  if (window.__MEDORA_STUDY_CUSTOM_DATE_V3_LOADER__) return;
+  window.__MEDORA_STUDY_CUSTOM_DATE_V3_LOADER__ = true;
+  const s = document.createElement("script");
+  s.src = "study-custom-date-plans-v3.js?v=3.0.0";
+  s.async = false;
+  s.dataset.medoraStudyCustomDateV3 = "true";
+  document.head.appendChild(s);
 })();
